@@ -445,8 +445,12 @@ function App() {
               <input value={sheet.goal} onChange={(event) => update("goal", event.target.value)} placeholder="例：3ヶ月で姿勢改善" />
             </label>
             <label>
-              過去の施術・トレーニング経験
-              <input value={sheet.priorExperience} onChange={(event) => update("priorExperience", event.target.value)} />
+              過去の施術・トレーニング経験・運動歴
+              <input
+                value={sheet.priorExperience}
+                onChange={(event) => update("priorExperience", event.target.value)}
+                placeholder="例：高校でサッカー"
+              />
             </label>
           </div>
         </section>
