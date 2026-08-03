@@ -1,6 +1,6 @@
 import html2canvas from "html2canvas";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { connectGoogleDrive, disconnectGoogleDrive, uploadKarteImage } from "./googleDrive";
+import { connectGoogleDrive, disconnectGoogleDrive, isDriveConfigured, uploadKarteImage } from "./googleDrive";
 import { deleteCounselingSheet, getSavedCounselingSheets, saveCounselingSheet } from "./storage";
 import type { CounselingSheetData, Gender } from "./types";
 
@@ -567,21 +567,25 @@ function App() {
                 <button className="secondary-button" onClick={onNew}>
                   新規作成
                 </button>
-                {driveConnected ? (
-                  <button className="ghost-button" onClick={handleDisconnectDrive}>
-                    Googleドライブ連携を解除
-                  </button>
-                ) : (
-                  <button className="ghost-button" onClick={handleConnectDrive} disabled={isConnectingDrive}>
-                    {isConnectingDrive ? "連携中…" : "Googleドライブと連携"}
-                  </button>
-                )}
+                {isDriveConfigured() ? (
+                  driveConnected ? (
+                    <button className="ghost-button" onClick={handleDisconnectDrive}>
+                      Googleドライブ連携を解除
+                    </button>
+                  ) : (
+                    <button className="ghost-button" onClick={handleConnectDrive} disabled={isConnectingDrive}>
+                      {isConnectingDrive ? "連携中…" : "Googleドライブと連携"}
+                    </button>
+                  )
+                ) : null}
               </div>
-              <p className="muted drive-hint">
-                {driveConnected
-                  ? "連携中：「シートを保存」を押すと顧客ごとのフォルダに画像が自動アップロードされます。"
-                  : "連携すると、保存時に自動でGoogleドライブへも画像がアップロードされます。"}
-              </p>
+              {isDriveConfigured() ? (
+                <p className="muted drive-hint">
+                  {driveConnected
+                    ? "連携中：「シートを保存」を押すと顧客ごとのフォルダに画像が自動アップロードされます。"
+                    : "連携すると、保存時に自動でGoogleドライブへも画像がアップロードされます。"}
+                </p>
+              ) : null}
               {status ? <p className="status">{status}</p> : null}
               <div className="history-list">
                 {savedSheets.length ? (

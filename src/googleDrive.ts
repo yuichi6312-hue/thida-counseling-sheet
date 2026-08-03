@@ -9,7 +9,7 @@ const FOLDER_CACHE_KEY = "thida.drive.folders.v1";
 let accessToken: string | null = null;
 let tokenExpiry = 0;
 
-const isConfigured = () => CLIENT_ID !== "REPLACE_WITH_YOUR_GOOGLE_OAUTH_CLIENT_ID";
+export const isDriveConfigured = () => CLIENT_ID !== "REPLACE_WITH_YOUR_GOOGLE_OAUTH_CLIENT_ID";
 
 const loadGsiScript = (): Promise<void> => {
   return new Promise((resolve, reject) => {
@@ -36,7 +36,7 @@ const loadGsiScript = (): Promise<void> => {
 export const isDriveConnected = () => Boolean(accessToken) && Date.now() < tokenExpiry;
 
 export const connectGoogleDrive = async (): Promise<void> => {
-  if (!isConfigured()) {
+  if (!isDriveConfigured()) {
     throw new Error("Googleドライブ連携が未設定です。運営者にお問い合わせください。");
   }
   await loadGsiScript();
