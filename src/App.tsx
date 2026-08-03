@@ -20,10 +20,6 @@ const emptySheet = (): CounselingSheetData => ({
   birthdate: "",
   gender: "",
   phone: "",
-  height: "",
-  weight: "",
-  bodyFatPercent: "",
-  bloodPressure: "",
   healthConditions: [],
   healthConditionsOther: "",
   medications: "",
@@ -88,14 +84,6 @@ const calcAge = (birthdate: string, at: string) => {
   return age >= 0 ? String(age) : "";
 };
 
-const calcBmi = (height: string, weight: string) => {
-  const h = Number(height);
-  const w = Number(weight);
-  if (!h || !w) return "";
-  const m = h / 100;
-  return (w / (m * m)).toFixed(1);
-};
-
 const scrollTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
 const formatWeeklyCount = (value: number) => (value >= 7 ? "毎日" : `週${value}回`);
@@ -142,7 +130,6 @@ function App() {
   const [entryError, setEntryError] = useState("");
 
   const age = useMemo(() => calcAge(sheet.birthdate, sheet.visitDate), [sheet.birthdate, sheet.visitDate]);
-  const bmi = useMemo(() => calcBmi(sheet.height, sheet.weight), [sheet.height, sheet.weight]);
 
   const update = <K extends keyof CounselingSheetData>(key: K, value: CounselingSheetData[K]) => {
     setSheet((current) => ({ ...current, [key]: value }));
@@ -307,36 +294,9 @@ function App() {
           </div>
         </section>
 
-        {stage === "staff" ? (
-          <section className="panel no-print">
-            <div className="section-heading">
-              <span>02</span>
-              <h2>身体情報</h2>
-            </div>
-            <div className="form-grid three">
-              <label>
-                身長 (cm)
-                <input inputMode="decimal" value={sheet.height} onChange={(event) => update("height", event.target.value)} />
-              </label>
-              <label>
-                体重 (kg)
-                <input inputMode="decimal" value={sheet.weight} onChange={(event) => update("weight", event.target.value)} />
-              </label>
-              <label>
-                体脂肪率 (%)
-                <input inputMode="decimal" value={sheet.bodyFatPercent} onChange={(event) => update("bodyFatPercent", event.target.value)} />
-              </label>
-              <label>
-                血圧 (任意)
-                <input value={sheet.bloodPressure} onChange={(event) => update("bloodPressure", event.target.value)} placeholder="例：120/78" />
-              </label>
-            </div>
-          </section>
-        ) : null}
-
         <section className="panel no-print">
           <div className="section-heading">
-            <span>{stage === "staff" ? "03" : "02"}</span>
+            <span>02</span>
             <h2>既往歴・健康状態</h2>
           </div>
           <div className="checkbox-grid">
@@ -369,7 +329,7 @@ function App() {
 
         <section className="panel no-print">
           <div className="section-heading">
-            <span>{stage === "staff" ? "04" : "03"}</span>
+            <span>03</span>
             <h2>生活習慣</h2>
           </div>
           <div className="slider-grid">
@@ -414,7 +374,7 @@ function App() {
 
         <section className="panel no-print">
           <div className="section-heading">
-            <span>{stage === "staff" ? "05" : "04"}</span>
+            <span>04</span>
             <h2>お悩み・ご要望</h2>
           </div>
           <div className="checkbox-grid">
@@ -462,7 +422,7 @@ function App() {
           <>
             <section className="panel no-print">
               <div className="section-heading">
-                <span>06</span>
+                <span>05</span>
                 <h2>保存済みシート</h2>
               </div>
               <div className="action-row">
@@ -532,31 +492,6 @@ function App() {
                   <div>
                     <label>電話番号</label>
                     <p>{sheet.phone || "－"}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="karte-block">
-                <div className="karte-row">
-                  <div>
-                    <label>身長</label>
-                    <p>{sheet.height ? `${sheet.height} cm` : "－"}</p>
-                  </div>
-                  <div>
-                    <label>体重</label>
-                    <p>{sheet.weight ? `${sheet.weight} kg` : "－"}</p>
-                  </div>
-                  <div>
-                    <label>BMI</label>
-                    <p>{bmi || "－"}</p>
-                  </div>
-                  <div>
-                    <label>体脂肪率</label>
-                    <p>{sheet.bodyFatPercent ? `${sheet.bodyFatPercent} %` : "－"}</p>
-                  </div>
-                  <div>
-                    <label>血圧</label>
-                    <p>{sheet.bloodPressure || "－"}</p>
                   </div>
                 </div>
               </div>

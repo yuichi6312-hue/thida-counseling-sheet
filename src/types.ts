@@ -11,10 +11,6 @@ export type CounselingSheetData = {
   birthdate: string;
   gender: Gender;
   phone: string;
-  height: string;
-  weight: string;
-  bodyFatPercent: string;
-  bloodPressure: string;
   healthConditions: string[];
   healthConditionsOther: string;
   medications: string;
