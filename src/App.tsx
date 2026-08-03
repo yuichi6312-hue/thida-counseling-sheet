@@ -28,9 +28,10 @@ const emptySheet = (): CounselingSheetData => ({
   healthConditionsOther: "",
   medications: "",
   allergies: "",
-  exerciseHabit: "",
-  sleepHours: "",
-  smokingAlcohol: "",
+  exerciseFrequency: 0,
+  sleepHours: 6,
+  smoking: "",
+  alcoholFrequency: 0,
   concerns: [],
   concernsOther: "",
   goal: "",
@@ -102,6 +103,42 @@ const calcBmi = (height: string, weight: string) => {
 };
 
 const scrollTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+
+const formatWeeklyCount = (value: number) => (value >= 7 ? "毎日" : `週${value}回`);
+const formatSleepHours = (value: number) => `${value}時間`;
+
+type SliderFieldProps = {
+  label: string;
+  hint?: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  formatValue: (value: number) => string;
+  onChange: (value: number) => void;
+};
+
+function SliderField({ label, hint, value, min, max, step, formatValue, onChange }: SliderFieldProps) {
+  return (
+    <div className="slider-field">
+      <div className="slider-field-head">
+        <span>
+          {label}
+          {hint ? <em>{hint}</em> : null}
+        </span>
+        <strong>{formatValue(value)}</strong>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(event) => onChange(Number(event.target.value))}
+      />
+    </div>
+  );
+}
 
 function App() {
   const [stage, setStage] = useState<Stage>("entry");
@@ -341,18 +378,42 @@ function App() {
             <span>{stage === "staff" ? "04" : "03"}</span>
             <h2>生活習慣</h2>
           </div>
-          <div className="form-grid three">
+          <div className="slider-grid">
+            <SliderField
+              label="運動習慣"
+              hint="週の運動回数"
+              value={sheet.exerciseFrequency}
+              min={0}
+              max={7}
+              step={1}
+              formatValue={formatWeeklyCount}
+              onChange={(value) => update("exerciseFrequency", value)}
+            />
+            <SliderField
+              label="睡眠時間"
+              hint="平均"
+              value={sheet.sleepHours}
+              min={3}
+              max={10}
+              step={0.5}
+              formatValue={formatSleepHours}
+              onChange={(value) => update("sleepHours", value)}
+            />
+            <SliderField
+              label="飲酒"
+              hint="週の回数"
+              value={sheet.alcoholFrequency}
+              min={0}
+              max={7}
+              step={1}
+              formatValue={formatWeeklyCount}
+              onChange={(value) => update("alcoholFrequency", value)}
+            />
+          </div>
+          <div className="form-grid">
             <label>
-              運動習慣
-              <input value={sheet.exerciseHabit} onChange={(event) => update("exerciseHabit", event.target.value)} placeholder="例：週2回ジム" />
-            </label>
-            <label>
-              睡眠時間
-              <input value={sheet.sleepHours} onChange={(event) => update("sleepHours", event.target.value)} placeholder="例：6時間" />
-            </label>
-            <label>
-              喫煙・飲酒
-              <input value={sheet.smokingAlcohol} onChange={(event) => update("smokingAlcohol", event.target.value)} placeholder="例：飲酒 週2回" />
+              喫煙
+              <input value={sheet.smoking} onChange={(event) => update("smoking", event.target.value)} placeholder="例：なし／1日10本" />
             </label>
           </div>
         </section>
@@ -565,9 +626,10 @@ function App() {
               <div className="karte-block">
                 <h3>生活習慣</h3>
                 <div className="karte-detail-row">
-                  <span>運動習慣：{sheet.exerciseHabit || "－"}</span>
-                  <span>睡眠時間：{sheet.sleepHours || "－"}</span>
-                  <span>喫煙・飲酒：{sheet.smokingAlcohol || "－"}</span>
+                  <span>運動習慣：{formatWeeklyCount(sheet.exerciseFrequency)}</span>
+                  <span>睡眠時間：{formatSleepHours(sheet.sleepHours)}</span>
+                  <span>飲酒：{formatWeeklyCount(sheet.alcoholFrequency)}</span>
+                  <span>喫煙：{sheet.smoking || "なし"}</span>
                 </div>
               </div>
 

@@ -19,9 +19,10 @@ export type CounselingSheetData = {
   healthConditionsOther: string;
   medications: string;
   allergies: string;
-  exerciseHabit: string;
-  sleepHours: string;
-  smokingAlcohol: string;
+  exerciseFrequency: number;
+  sleepHours: number;
+  smoking: string;
+  alcoholFrequency: number;
   concerns: string[];
   concernsOther: string;
   goal: string;
