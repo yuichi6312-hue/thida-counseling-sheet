@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import html2canvas from "html2canvas";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { deleteCounselingSheet, getSavedCounselingSheets, saveCounselingSheet } from "./storage";
 import type { CounselingSheetData, Gender } from "./types";
 
@@ -13,13 +14,11 @@ const emptySheet = (): CounselingSheetData => ({
   id: createId(),
   createdAt: new Date().toISOString(),
   visitDate: today(),
-  visitType: "first",
   staffName: "",
   name: "",
   kana: "",
   birthdate: "",
   gender: "",
-  phone: "",
   healthConditions: [],
   healthConditionsOther: "",
   medications: "",
@@ -86,6 +85,21 @@ const calcAge = (birthdate: string, at: string) => {
 
 const scrollTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
+const CURRENT_YEAR = new Date().getFullYear();
+const BIRTH_YEARS = Array.from({ length: 101 }, (_, i) => CURRENT_YEAR - 100 + i);
+const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
+
+const daysInMonth = (year: number, month: number) => new Date(year, month, 0).getDate();
+
+const parseBirthdate = (value: string) => {
+  const [y, m, d] = value.split("-").map(Number);
+  return {
+    year: y || undefined,
+    month: m || undefined,
+    day: d || undefined
+  };
+};
+
 const formatWeeklyCount = (value: number) => (value >= 7 ? "毎日" : `週${value}回`);
 const formatSleepHours = (value: number) => `${value}時間`;
 
@@ -128,11 +142,45 @@ function App() {
   const [savedSheets, setSavedSheets] = useState<CounselingSheetData[]>(() => getSavedCounselingSheets());
   const [status, setStatus] = useState("");
   const [entryError, setEntryError] = useState("");
+  const [isSavingImage, setIsSavingImage] = useState(false);
+  const karteRef = useRef<HTMLElement>(null);
+
+  const [birthYear, setBirthYear] = useState<number | undefined>(() => parseBirthdate(sheet.birthdate).year);
+  const [birthMonth, setBirthMonth] = useState<number | undefined>(() => parseBirthdate(sheet.birthdate).month);
+  const [birthDay, setBirthDay] = useState<number | undefined>(() => parseBirthdate(sheet.birthdate).day);
+
+  useEffect(() => {
+    const parsed = parseBirthdate(sheet.birthdate);
+    setBirthYear(parsed.year);
+    setBirthMonth(parsed.month);
+    setBirthDay(parsed.day);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sheet.id]);
 
   const age = useMemo(() => calcAge(sheet.birthdate, sheet.visitDate), [sheet.birthdate, sheet.visitDate]);
+  const dayOptionsForBirth = useMemo(
+    () => Array.from({ length: daysInMonth(birthYear ?? CURRENT_YEAR, birthMonth ?? 1) }, (_, i) => i + 1),
+    [birthYear, birthMonth]
+  );
 
   const update = <K extends keyof CounselingSheetData>(key: K, value: CounselingSheetData[K]) => {
     setSheet((current) => ({ ...current, [key]: value }));
+  };
+
+  const updateBirthPart = (part: "year" | "month" | "day", raw: string) => {
+    const value = raw === "" ? undefined : Number(raw);
+    const year = part === "year" ? value : birthYear;
+    const month = part === "month" ? value : birthMonth;
+    const day = part === "day" ? value : birthDay;
+    setBirthYear(year);
+    setBirthMonth(month);
+    setBirthDay(day);
+    if (year && month && day) {
+      const clampedDay = Math.min(day, daysInMonth(year, month));
+      update("birthdate", `${year}-${String(month).padStart(2, "0")}-${String(clampedDay).padStart(2, "0")}`);
+    } else {
+      update("birthdate", "");
+    }
   };
 
   const onSave = () => {
@@ -188,6 +236,38 @@ function App() {
     scrollTop();
   };
 
+  const saveAsImage = async () => {
+    if (!karteRef.current || isSavingImage) return;
+    setIsSavingImage(true);
+    try {
+      const canvas = await html2canvas(karteRef.current, { backgroundColor: "#ffffff", scale: 2 });
+      const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+      if (!blob) return;
+      const fileName = `カウンセリングシート_${sheet.name || "無題"}_${sheet.visitDate}.png`;
+      const file = new File([blob], fileName, { type: "image/png" });
+
+      if (navigator.canShare?.({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: fileName });
+          return;
+        } catch {
+          // ユーザーがキャンセルした場合などはダウンロードにフォールバック
+        }
+      }
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } finally {
+      setIsSavingImage(false);
+    }
+  };
+
   if (stage === "thankyou") {
     return (
       <div className="app">
@@ -220,8 +300,8 @@ function App() {
             <button className="secondary-button" onClick={startNextCustomer}>
               次のお客様へ
             </button>
-            <button className="ghost-button" onClick={() => window.print()}>
-              PDF印刷
+            <button className="ghost-button" onClick={saveAsImage} disabled={isSavingImage}>
+              {isSavingImage ? "画像を作成中" : "画像で保存"}
             </button>
           </div>
         ) : (
@@ -251,22 +331,8 @@ function App() {
                   <input type="date" value={sheet.visitDate} onChange={(event) => update("visitDate", event.target.value)} />
                 </label>
                 <label>
-                  来店区分
-                  <select
-                    value={sheet.visitType}
-                    onChange={(event) => update("visitType", event.target.value as CounselingSheetData["visitType"])}
-                  >
-                    <option value="first">初回</option>
-                    <option value="repeat">継続来店</option>
-                  </select>
-                </label>
-                <label>
                   担当スタッフ
                   <input value={sheet.staffName} onChange={(event) => update("staffName", event.target.value)} placeholder="例：THIDA 太郎" />
-                </label>
-                <label>
-                  電話番号
-                  <input value={sheet.phone} onChange={(event) => update("phone", event.target.value)} placeholder="例：090-1234-5678" />
                 </label>
               </>
             ) : null}
@@ -279,10 +345,6 @@ function App() {
               <input value={sheet.kana} onChange={(event) => update("kana", event.target.value)} placeholder="例：ヤマダ ハナコ" />
             </label>
             <label>
-              生年月日
-              <input type="date" value={sheet.birthdate} onChange={(event) => update("birthdate", event.target.value)} />
-            </label>
-            <label>
               性別
               <select value={sheet.gender} onChange={(event) => update("gender", event.target.value as Gender)}>
                 <option value="">未回答</option>
@@ -290,6 +352,37 @@ function App() {
                 <option value="female">女性</option>
                 <option value="other">その他</option>
               </select>
+            </label>
+          </div>
+          <div className="form-grid">
+            <label className="wide">
+              生年月日
+              <div className="birthdate-select-row">
+                <select value={birthYear ?? ""} onChange={(event) => updateBirthPart("year", event.target.value)}>
+                  <option value="">年</option>
+                  {BIRTH_YEARS.map((y) => (
+                    <option key={y} value={y}>
+                      {y}年
+                    </option>
+                  ))}
+                </select>
+                <select value={birthMonth ?? ""} onChange={(event) => updateBirthPart("month", event.target.value)}>
+                  <option value="">月</option>
+                  {MONTHS.map((m) => (
+                    <option key={m} value={m}>
+                      {m}月
+                    </option>
+                  ))}
+                </select>
+                <select value={birthDay ?? ""} onChange={(event) => updateBirthPart("day", event.target.value)}>
+                  <option value="">日</option>
+                  {dayOptionsForBirth.map((d) => (
+                    <option key={d} value={d}>
+                      {d}日
+                    </option>
+                  ))}
+                </select>
+              </div>
             </label>
           </div>
         </section>
@@ -458,12 +551,11 @@ function App() {
               </div>
             </section>
 
-            <section className="report karte" aria-label="カウンセリングシート（カルテ）">
+            <section className="report karte" aria-label="カウンセリングシート（カルテ）" ref={karteRef}>
               <div className="karte-head">
                 <h2>カウンセリングシート</h2>
                 <div className="karte-head-meta">
                   <span>来店日：{sheet.visitDate || "未入力"}</span>
-                  <span>{sheet.visitType === "repeat" ? "継続来店" : "初回"}</span>
                   <span>担当：{sheet.staffName || "未入力"}</span>
                 </div>
               </div>
@@ -488,10 +580,6 @@ function App() {
                   <div>
                     <label>性別</label>
                     <p>{genderLabel[sheet.gender]}</p>
-                  </div>
-                  <div>
-                    <label>電話番号</label>
-                    <p>{sheet.phone || "－"}</p>
                   </div>
                 </div>
               </div>

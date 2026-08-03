@@ -4,13 +4,11 @@ export type CounselingSheetData = {
   id: string;
   createdAt: string;
   visitDate: string;
-  visitType: "first" | "repeat" | "";
   staffName: string;
   name: string;
   kana: string;
   birthdate: string;
   gender: Gender;
-  phone: string;
   healthConditions: string[];
   healthConditionsOther: string;
   medications: string;
