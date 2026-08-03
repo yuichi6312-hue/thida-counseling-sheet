@@ -293,6 +293,11 @@ input[type="range"]::-moz-range-thumb {
   font-weight: 700;
 }
 
+.drive-hint {
+  margin: 12px 0 0;
+  font-size: 0.82rem;
+}
+
 .error {
   margin: 12px 0 0;
   font-weight: 700;

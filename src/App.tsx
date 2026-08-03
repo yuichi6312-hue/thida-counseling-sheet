@@ -1,5 +1,6 @@
 import html2canvas from "html2canvas";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { connectGoogleDrive, disconnectGoogleDrive, uploadKarteImage } from "./googleDrive";
 import { deleteCounselingSheet, getSavedCounselingSheets, saveCounselingSheet } from "./storage";
 import type { CounselingSheetData, Gender } from "./types";
 
@@ -143,6 +144,8 @@ function App() {
   const [status, setStatus] = useState("");
   const [entryError, setEntryError] = useState("");
   const [isSavingImage, setIsSavingImage] = useState(false);
+  const [driveConnected, setDriveConnected] = useState(false);
+  const [isConnectingDrive, setIsConnectingDrive] = useState(false);
   const karteRef = useRef<HTMLElement>(null);
 
   const [birthYear, setBirthYear] = useState<number | undefined>(() => parseBirthdate(sheet.birthdate).year);
@@ -183,14 +186,48 @@ function App() {
     }
   };
 
-  const onSave = () => {
+  const onSave = async () => {
     if (!sheet.name.trim()) {
       setStatus("お客様名を入力してください。");
       return;
     }
     saveCounselingSheet(sheet);
     setSavedSheets(getSavedCounselingSheets());
-    setStatus("カウンセリングシートを保存しました。");
+
+    if (!driveConnected) {
+      setStatus("カウンセリングシートを保存しました。");
+      return;
+    }
+
+    setStatus("カウンセリングシートを保存しました。Googleドライブにアップロード中…");
+    try {
+      const blob = await captureKarteImage();
+      if (blob) {
+        await uploadKarteImage(sheet.name, `${sheet.visitDate}.png`, blob);
+        setStatus("カウンセリングシートを保存し、Googleドライブにもアップロードしました。");
+      }
+    } catch (error) {
+      setStatus(`ローカルには保存しましたが、Googleドライブへのアップロードに失敗しました：${error instanceof Error ? error.message : "不明なエラー"}`);
+    }
+  };
+
+  const handleConnectDrive = async () => {
+    setIsConnectingDrive(true);
+    try {
+      await connectGoogleDrive();
+      setDriveConnected(true);
+      setStatus("Googleドライブと連携しました。「シートを保存」で自動アップロードされます。");
+    } catch (error) {
+      setStatus(`Googleドライブ連携に失敗しました：${error instanceof Error ? error.message : "不明なエラー"}`);
+    } finally {
+      setIsConnectingDrive(false);
+    }
+  };
+
+  const handleDisconnectDrive = () => {
+    disconnectGoogleDrive();
+    setDriveConnected(false);
+    setStatus("Googleドライブ連携を解除しました。");
   };
 
   const onNew = () => {
@@ -236,12 +273,17 @@ function App() {
     scrollTop();
   };
 
+  const captureKarteImage = async (): Promise<Blob | null> => {
+    if (!karteRef.current) return null;
+    const canvas = await html2canvas(karteRef.current, { backgroundColor: "#ffffff", scale: 2 });
+    return new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+  };
+
   const saveAsImage = async () => {
-    if (!karteRef.current || isSavingImage) return;
+    if (isSavingImage) return;
     setIsSavingImage(true);
     try {
-      const canvas = await html2canvas(karteRef.current, { backgroundColor: "#ffffff", scale: 2 });
-      const blob: Blob | null = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+      const blob = await captureKarteImage();
       if (!blob) return;
       const fileName = `カウンセリングシート_${sheet.name || "無題"}_${sheet.visitDate}.png`;
       const file = new File([blob], fileName, { type: "image/png" });
@@ -525,7 +567,21 @@ function App() {
                 <button className="secondary-button" onClick={onNew}>
                   新規作成
                 </button>
+                {driveConnected ? (
+                  <button className="ghost-button" onClick={handleDisconnectDrive}>
+                    Googleドライブ連携を解除
+                  </button>
+                ) : (
+                  <button className="ghost-button" onClick={handleConnectDrive} disabled={isConnectingDrive}>
+                    {isConnectingDrive ? "連携中…" : "Googleドライブと連携"}
+                  </button>
+                )}
               </div>
+              <p className="muted drive-hint">
+                {driveConnected
+                  ? "連携中：「シートを保存」を押すと顧客ごとのフォルダに画像が自動アップロードされます。"
+                  : "連携すると、保存時に自動でGoogleドライブへも画像がアップロードされます。"}
+              </p>
               {status ? <p className="status">{status}</p> : null}
               <div className="history-list">
                 {savedSheets.length ? (
