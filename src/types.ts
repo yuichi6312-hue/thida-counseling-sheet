@@ -1,0 +1,35 @@
+export type Gender = "male" | "female" | "other" | "";
+
+export type CounselingSheetData = {
+  id: string;
+  createdAt: string;
+  visitDate: string;
+  visitType: "first" | "repeat" | "";
+  staffName: string;
+  name: string;
+  kana: string;
+  birthdate: string;
+  gender: Gender;
+  phone: string;
+  height: string;
+  weight: string;
+  bodyFatPercent: string;
+  bloodPressure: string;
+  healthConditions: string[];
+  healthConditionsOther: string;
+  medications: string;
+  allergies: string;
+  exerciseHabit: string;
+  sleepHours: string;
+  smokingAlcohol: string;
+  concerns: string[];
+  concernsOther: string;
+  goal: string;
+  priorExperience: string;
+  agreeToTreatment: boolean;
+  signatureName: string;
+  signatureDate: string;
+  staffTreatmentPlan: string;
+  staffNextVisit: string;
+  staffMemo: string;
+};

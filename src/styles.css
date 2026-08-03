@@ -1,0 +1,456 @@
+:root {
+  font-family: "Inter", "Hiragino Sans", "Yu Gothic UI", "Yu Gothic", Arial, sans-serif;
+  color: #111111;
+  background: #ffffff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #f6f6f4;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  min-height: 48px;
+  border: 0;
+  cursor: pointer;
+}
+
+.app {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 18px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 0 26px;
+  flex-wrap: wrap;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 7vw, 3.4rem);
+  letter-spacing: 0;
+  line-height: 0.96;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.staff-link {
+  background: transparent;
+  color: #a8a49b;
+  border: 0;
+  min-height: auto;
+  padding: 6px 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.entry-lead {
+  margin: 0 0 18px;
+  color: #4d4a44;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #77736b;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.panel,
+.report {
+  background: #ffffff;
+  border: 1px solid #dedbd4;
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 18px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.section-heading span {
+  width: 34px;
+  height: 34px;
+  display: inline-grid;
+  place-items: center;
+  background: #111111;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 0.8rem;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 14px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  color: #343434;
+  font-weight: 700;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  border: 1px solid #d8d5ce;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #111111;
+  padding: 13px 14px;
+  min-height: 48px;
+  font-size: 16px;
+}
+
+textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+  margin-bottom: 14px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  color: #343434;
+  padding: 8px;
+  margin: -8px;
+  border-radius: 8px;
+  min-height: 44px;
+}
+
+.checkbox-item:active {
+  background: #f1efe9;
+}
+
+.checkbox-item input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
+  min-height: 0;
+  flex: none;
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.primary-button,
+.secondary-button,
+.ghost-button {
+  border-radius: 6px;
+  padding: 0 18px;
+  font-weight: 800;
+}
+
+.primary-button {
+  background: #111111;
+  color: #ffffff;
+}
+
+.secondary-button,
+.ghost-button {
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid #cfcac1;
+}
+
+.status {
+  margin: 12px 0 0;
+  font-weight: 700;
+}
+
+.error {
+  margin: 12px 0 0;
+  font-weight: 700;
+  color: #9b1c1c;
+}
+
+.muted {
+  color: #706c64;
+}
+
+.entry-submit {
+  text-align: center;
+}
+
+.entry-submit-button {
+  width: 100%;
+  min-height: 64px;
+  font-size: 1.1rem;
+  border-radius: 10px;
+}
+
+.thankyou-panel {
+  min-height: min(70vh, 640px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  padding: 40px 24px;
+}
+
+.thankyou-panel h1 {
+  margin: 6px 0 0;
+  font-size: clamp(1.8rem, 6vw, 2.6rem);
+  line-height: 1.3;
+}
+
+.thankyou-panel .muted {
+  max-width: 32ch;
+  margin: 4px 0 28px;
+}
+
+.thankyou-panel .staff-link {
+  color: #111111;
+  border: 1px solid #cfcac1;
+  border-radius: 6px;
+  padding: 0 18px;
+  min-height: 48px;
+  font-size: 0.82rem;
+  text-decoration: none;
+}
+
+.history-list {
+  display: grid;
+  gap: 8px;
+}
+
+.history-list article {
+  display: grid;
+  gap: 4px;
+  border: 1px solid #dedbd4;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.report {
+  padding: 20px;
+}
+
+.karte {
+  font-size: 0.86rem;
+}
+
+.karte-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 2px solid #111111;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.karte-head h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.karte-head-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.karte-block {
+  border-top: 1px solid #dedbd4;
+  padding-top: 10px;
+  margin-top: 10px;
+  break-inside: avoid;
+}
+
+.karte-block:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.karte-block h3 {
+  margin: 0 0 8px;
+  font-size: 0.88rem;
+}
+
+.karte-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 14px;
+}
+
+.karte-row label {
+  display: block;
+  font-size: 0.68rem;
+  color: #77736b;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.karte-row p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.karte-checklist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 16px;
+  font-size: 0.8rem;
+  margin-bottom: 8px;
+  color: #6f6a61;
+}
+
+.karte-checklist span.checked {
+  color: #111111;
+  font-weight: 700;
+}
+
+.karte-detail-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  font-size: 0.8rem;
+  color: #343434;
+  margin: 4px 0;
+}
+
+.karte-consent p {
+  margin: 0 0 6px;
+  font-weight: 700;
+}
+
+@media (min-width: 760px) {
+  .app {
+    padding: 28px;
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-grid.three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .checkbox-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .karte-row {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .wide {
+    grid-column: 1 / -1;
+  }
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  body {
+    background: #ffffff;
+  }
+
+  .app {
+    width: 100%;
+    padding: 0;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .report {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  .karte {
+    font-size: 10.5px;
+  }
+
+  .karte-head {
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+  }
+
+  .karte-head h2 {
+    font-size: 20px;
+  }
+
+  .karte-block {
+    padding-top: 6px;
+    margin-top: 6px;
+  }
+
+  .karte-row {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .karte-checklist {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
