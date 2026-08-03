@@ -35,13 +35,7 @@ const emptySheet = (): CounselingSheetData => ({
   concerns: [],
   concernsOther: "",
   goal: "",
-  priorExperience: "",
-  agreeToTreatment: false,
-  signatureName: "",
-  signatureDate: today(),
-  staffTreatmentPlan: "",
-  staffNextVisit: "",
-  staffMemo: ""
+  priorExperience: ""
 });
 
 const HEALTH_CONDITIONS = [
@@ -455,29 +449,6 @@ function App() {
           </div>
         </section>
 
-        {stage === "staff" ? (
-          <section className="panel no-print">
-            <div className="section-heading">
-              <span>06</span>
-              <h2>同意事項</h2>
-            </div>
-            <label className="checkbox-item">
-              <input type="checkbox" checked={sheet.agreeToTreatment} onChange={(event) => update("agreeToTreatment", event.target.checked)} />
-              施術・トレーニング内容、注意事項の説明を受け、内容に同意します。
-            </label>
-            <div className="form-grid three">
-              <label>
-                署名（お客様氏名）
-                <input value={sheet.signatureName} onChange={(event) => update("signatureName", event.target.value)} />
-              </label>
-              <label>
-                署名日
-                <input type="date" value={sheet.signatureDate} onChange={(event) => update("signatureDate", event.target.value)} />
-              </label>
-            </div>
-          </section>
-        ) : null}
-
         {stage === "entry" ? (
           <section className="panel no-print entry-submit">
             <button className="primary-button entry-submit-button" onClick={finishEntry}>
@@ -491,22 +462,8 @@ function App() {
           <>
             <section className="panel no-print">
               <div className="section-heading">
-                <span>07</span>
-                <h2>スタッフ記入欄</h2>
-              </div>
-              <div className="form-grid">
-                <label className="wide">
-                  施術・トレーニング方針
-                  <textarea value={sheet.staffTreatmentPlan} onChange={(event) => update("staffTreatmentPlan", event.target.value)} />
-                </label>
-                <label>
-                  次回来店目安
-                  <input value={sheet.staffNextVisit} onChange={(event) => update("staffNextVisit", event.target.value)} placeholder="例：2週間後" />
-                </label>
-                <label className="wide">
-                  メモ
-                  <textarea value={sheet.staffMemo} onChange={(event) => update("staffMemo", event.target.value)} />
-                </label>
+                <span>06</span>
+                <h2>保存済みシート</h2>
               </div>
               <div className="action-row">
                 <button className="primary-button" onClick={onSave}>
@@ -517,13 +474,6 @@ function App() {
                 </button>
               </div>
               {status ? <p className="status">{status}</p> : null}
-            </section>
-
-            <section className="panel no-print">
-              <div className="section-heading">
-                <span>08</span>
-                <h2>保存済みシート</h2>
-              </div>
               <div className="history-list">
                 {savedSheets.length ? (
                   savedSheets.map((item) => (
@@ -651,23 +601,6 @@ function App() {
                   <span>目標：{sheet.goal || "－"}</span>
                   <span>経験：{sheet.priorExperience || "－"}</span>
                 </div>
-              </div>
-
-              <div className="karte-block karte-consent">
-                <p>{sheet.agreeToTreatment ? "☑" : "☐"} 施術・トレーニング内容、注意事項の説明を受け、内容に同意します。</p>
-                <div className="karte-detail-row">
-                  <span>署名：{sheet.signatureName || "－"}</span>
-                  <span>署名日：{sheet.signatureDate || "－"}</span>
-                </div>
-              </div>
-
-              <div className="karte-block">
-                <h3>スタッフ記入欄</h3>
-                <p>方針：{sheet.staffTreatmentPlan || "－"}</p>
-                <div className="karte-detail-row">
-                  <span>次回来店目安：{sheet.staffNextVisit || "－"}</span>
-                </div>
-                <p>メモ：{sheet.staffMemo || "－"}</p>
               </div>
             </section>
           </>

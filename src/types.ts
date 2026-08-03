@@ -27,10 +27,4 @@ export type CounselingSheetData = {
   concernsOther: string;
   goal: string;
   priorExperience: string;
-  agreeToTreatment: boolean;
-  signatureName: string;
-  signatureDate: string;
-  staffTreatmentPlan: string;
-  staffNextVisit: string;
-  staffMemo: string;
 };

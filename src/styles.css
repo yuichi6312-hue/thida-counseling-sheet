@@ -446,11 +446,6 @@ input[type="range"]::-moz-range-thumb {
   margin: 4px 0;
 }
 
-.karte-consent p {
-  margin: 0 0 6px;
-  font-weight: 700;
-}
-
 @media (min-width: 760px) {
   .app {
     padding: 28px;
