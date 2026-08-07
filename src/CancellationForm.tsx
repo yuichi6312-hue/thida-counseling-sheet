@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import { captureElementImage, shareOrDownloadImage } from "./imageExport";
+import { openMailDraft } from "./mailer";
 import ModeTabs, { type DocMode } from "./ModeTabs";
+import SignaturePad from "./SignaturePad";
 import { cancellationStorage } from "./storage";
 import type { CancellationData } from "./types";
 
@@ -9,24 +11,16 @@ const createId = () =>
 
 const today = () => new Date().toISOString().slice(0, 10);
 
-const REASONS = ["引っ越し", "効果を感じない", "費用", "時間が合わない", "他店舗を利用", "その他"];
-
 const emptyCancellation = (): CancellationData => ({
   id: createId(),
   createdAt: new Date().toISOString(),
   submittedDate: today(),
   customerName: "",
-  customerKana: "",
-  memberNumber: "",
-  joinDate: "",
+  customerPhone: "",
+  customerEmail: "",
   cancellationDate: "",
-  reasons: [],
-  reasonOther: "",
-  signatureName: ""
+  signatureImage: ""
 });
-
-const toggleValue = (list: string[], value: string) =>
-  list.includes(value) ? list.filter((entry) => entry !== value) : [...list, value];
 
 type CancellationFormProps = {
   mode: DocMode;
@@ -46,7 +40,7 @@ function CancellationForm({ mode, onModeChange }: CancellationFormProps) {
 
   const onSave = () => {
     if (!data.customerName.trim()) {
-      setStatus("お客様名を入力してください。");
+      setStatus("お名前を入力してください。");
       return;
     }
     cancellationStorage.save(data);
@@ -74,15 +68,36 @@ function CancellationForm({ mode, onModeChange }: CancellationFormProps) {
   };
 
   const saveAsImage = async () => {
-    if (!printRef.current || isSavingImage) return;
+    if (!printRef.current || isSavingImage) return null;
     setIsSavingImage(true);
     try {
-      const blob = await captureElementImage(printRef.current);
-      if (!blob) return;
-      await shareOrDownloadImage(blob, `解約届_${data.customerName || "無題"}_${data.submittedDate}.png`);
+      return await captureElementImage(printRef.current);
     } finally {
       setIsSavingImage(false);
     }
+  };
+
+  const handleSaveToDevice = async () => {
+    const blob = await saveAsImage();
+    if (!blob) return;
+    await shareOrDownloadImage(blob, `解約届_${data.customerName || "無題"}_${data.submittedDate}.png`);
+  };
+
+  const handleSendEmail = async () => {
+    if (!data.customerEmail.trim()) {
+      setStatus("送付先のメールアドレスを入力してください。");
+      return;
+    }
+    const blob = await saveAsImage();
+    if (blob) {
+      await shareOrDownloadImage(blob, `解約届_${data.customerName || "無題"}_${data.submittedDate}.png`);
+    }
+    openMailDraft(
+      data.customerEmail,
+      "【THIDA】解約届のご案内",
+      `${data.customerName} 様\n\n解約届をお送りいたします。先ほど保存された画像をこのメールに添付してご送付ください。\n\nTHIDA`
+    );
+    setStatus("画像を保存しました。開いたメール作成画面に画像を添付して送信してください。");
   };
 
   return (
@@ -94,8 +109,11 @@ function CancellationForm({ mode, onModeChange }: CancellationFormProps) {
         </div>
         <div className="header-actions">
           <ModeTabs current={mode} onChange={onModeChange} />
-          <button className="ghost-button" onClick={saveAsImage} disabled={isSavingImage}>
-            {isSavingImage ? "画像を作成中" : "画像で保存"}
+          <button className="ghost-button" onClick={handleSaveToDevice} disabled={isSavingImage}>
+            {isSavingImage ? "画像を作成中" : "iPadに保存"}
+          </button>
+          <button className="ghost-button" onClick={handleSendEmail} disabled={isSavingImage}>
+            メールで送付
           </button>
         </div>
       </header>
@@ -112,23 +130,24 @@ function CancellationForm({ mode, onModeChange }: CancellationFormProps) {
               <input type="date" value={data.submittedDate} onChange={(event) => update("submittedDate", event.target.value)} />
             </label>
             <label>
-              お客様名
+              お名前
               <input value={data.customerName} onChange={(event) => update("customerName", event.target.value)} placeholder="例：山田 花子" />
             </label>
             <label>
-              フリガナ
-              <input value={data.customerKana} onChange={(event) => update("customerKana", event.target.value)} placeholder="例：ヤマダ ハナコ" />
+              電話番号
+              <input value={data.customerPhone} onChange={(event) => update("customerPhone", event.target.value)} placeholder="例：090-1234-5678" />
             </label>
             <label>
-              会員番号
-              <input value={data.memberNumber} onChange={(event) => update("memberNumber", event.target.value)} />
+              メールアドレス
+              <input
+                type="email"
+                value={data.customerEmail}
+                onChange={(event) => update("customerEmail", event.target.value)}
+                placeholder="例：sample@example.com"
+              />
             </label>
             <label>
-              入会日
-              <input type="date" value={data.joinDate} onChange={(event) => update("joinDate", event.target.value)} />
-            </label>
-            <label>
-              解約希望日
+              解約日（月末日付）
               <input type="date" value={data.cancellationDate} onChange={(event) => update("cancellationDate", event.target.value)} />
             </label>
           </div>
@@ -137,26 +156,18 @@ function CancellationForm({ mode, onModeChange }: CancellationFormProps) {
         <section className="panel no-print">
           <div className="section-heading">
             <span>02</span>
-            <h2>解約理由</h2>
+            <h2>ご確認事項</h2>
           </div>
-          <div className="checkbox-grid">
-            {REASONS.map((reason) => (
-              <label key={reason} className="checkbox-item">
-                <input
-                  type="checkbox"
-                  checked={data.reasons.includes(reason)}
-                  onChange={() => update("reasons", toggleValue(data.reasons, reason))}
-                />
-                {reason}
-              </label>
-            ))}
-          </div>
-          <div className="form-grid">
-            <label className="wide">
-              その他・詳細
-              <input value={data.reasonOther} onChange={(event) => update("reasonOther", event.target.value)} />
-            </label>
-          </div>
+          <p className="entry-lead">
+            ご利用ありがとうございました。トラブル防止のため下記内容をご確認ください。
+          </p>
+          <p className="muted">
+            1〜7日までに届出　翌月の引落としで終了。
+            <br />
+            8〜31日までに届出　翌々月の引落としで終了。
+            <br />
+            万一上記以降に引落がされた場合は、お手数ですが店舗スタッフまでお問い合わせください。
+          </p>
         </section>
 
         <section className="panel no-print">
@@ -164,12 +175,7 @@ function CancellationForm({ mode, onModeChange }: CancellationFormProps) {
             <span>03</span>
             <h2>署名</h2>
           </div>
-          <div className="form-grid three">
-            <label>
-              署名（お客様氏名）
-              <input value={data.signatureName} onChange={(event) => update("signatureName", event.target.value)} />
-            </label>
-          </div>
+          <SignaturePad value={data.signatureImage} onChange={(dataUrl) => update("signatureImage", dataUrl)} />
         </section>
 
         <section className="panel no-print">
@@ -212,7 +218,7 @@ function CancellationForm({ mode, onModeChange }: CancellationFormProps) {
 
         <section className="report karte" aria-label="解約届" ref={printRef}>
           <div className="karte-head">
-            <h2>解約届</h2>
+            <h2>月額解約届</h2>
             <div className="karte-head-meta">
               <span>届出日：{data.submittedDate || "未入力"}</span>
             </div>
@@ -221,46 +227,40 @@ function CancellationForm({ mode, onModeChange }: CancellationFormProps) {
           <div className="karte-block">
             <div className="karte-row">
               <div>
-                <label>氏名</label>
+                <label>お名前</label>
                 <p>{data.customerName || "－"}</p>
               </div>
               <div>
-                <label>フリガナ</label>
-                <p>{data.customerKana || "－"}</p>
+                <label>電話番号</label>
+                <p>{data.customerPhone || "－"}</p>
               </div>
               <div>
-                <label>会員番号</label>
-                <p>{data.memberNumber || "－"}</p>
-              </div>
-              <div>
-                <label>入会日</label>
-                <p>{data.joinDate || "－"}</p>
-              </div>
-              <div>
-                <label>解約希望日</label>
+                <label>解約日（月末日付）</label>
                 <p>{data.cancellationDate || "－"}</p>
               </div>
             </div>
           </div>
 
           <div className="karte-block">
-            <h3>解約理由</h3>
-            <div className="karte-checklist">
-              {REASONS.map((reason) => (
-                <span key={reason} className={data.reasons.includes(reason) ? "checked" : ""}>
-                  {data.reasons.includes(reason) ? "☑" : "☐"} {reason}
-                </span>
-              ))}
-            </div>
-            <div className="karte-detail-row">
-              <span>その他：{data.reasonOther || "なし"}</span>
-            </div>
+            <h3>ご確認事項</h3>
+            <p className="terms-body-print">
+              ご利用ありがとうございました。トラブル防止のため下記内容をご確認ください。{"\n"}
+              1〜7日までに届出　翌月の引落としで終了。{"\n"}
+              8〜31日までに届出　翌々月の引落としで終了。{"\n"}
+              万一上記以降に引落がされた場合は、お手数ですが店舗スタッフまでお問い合わせください。
+            </p>
           </div>
 
           <div className="karte-block">
-            <div className="karte-detail-row">
-              <span>署名：{data.signatureName || "－"}</span>
+            <div className="signature-print">
+              <span>署名</span>
+              {data.signatureImage ? <img src={data.signatureImage} alt="署名" /> : <span className="muted">未署名</span>}
             </div>
+          </div>
+
+          <div className="karte-footer">
+            <span>THIDA －NIHONBASHI－　東京都中央区日本橋小舟町7-1-B1　TEL 03-6231-0107</span>
+            <span>THIDA －TOYOCHO－　東京都江東区東陽5-31-21　TEL 03-6666-3101</span>
           </div>
         </section>
       </main>

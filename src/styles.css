@@ -493,6 +493,80 @@ input[type="range"]::-moz-range-thumb {
   margin: 4px 0;
 }
 
+.signature-field {
+  display: grid;
+  gap: 8px;
+}
+
+.signature-label {
+  color: #343434;
+  font-weight: 700;
+}
+
+.signature-pad-wrap {
+  position: relative;
+  border: 1px dashed #d8d5ce;
+  border-radius: 8px;
+  background: #ffffff;
+  touch-action: none;
+  overflow: hidden;
+}
+
+.signature-pad {
+  display: block;
+  width: 100%;
+  touch-action: none;
+}
+
+.signature-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #b8b4aa;
+  font-weight: 700;
+  font-size: 0.82rem;
+  pointer-events: none;
+}
+
+.signature-clear {
+  justify-self: start;
+  margin-top: 2px;
+  min-height: 40px;
+  padding: 0 14px;
+  font-size: 0.8rem;
+}
+
+.signature-print {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.signature-print span:first-child {
+  font-size: 0.68rem;
+  color: #77736b;
+  font-weight: 700;
+}
+
+.signature-print img {
+  max-height: 60px;
+  max-width: 220px;
+  object-fit: contain;
+}
+
+.karte-footer {
+  border-top: 1px solid #dedbd4;
+  padding-top: 10px;
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.72rem;
+  color: #77736b;
+}
+
 @media (min-width: 760px) {
   .app {
     padding: 28px;

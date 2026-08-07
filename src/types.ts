@@ -29,9 +29,10 @@ export type TermsAgreementData = {
   agreementDate: string;
   customerName: string;
   customerKana: string;
+  customerEmail: string;
   termsBody: string;
   agreed: boolean;
-  signatureName: string;
+  signatureImage: string;
 };
 
 export type CancellationData = {
@@ -39,13 +40,10 @@ export type CancellationData = {
   createdAt: string;
   submittedDate: string;
   customerName: string;
-  customerKana: string;
-  memberNumber: string;
-  joinDate: string;
+  customerPhone: string;
+  customerEmail: string;
   cancellationDate: string;
-  reasons: string[];
-  reasonOther: string;
-  signatureName: string;
+  signatureImage: string;
 };
 
 export type ChangeRequestData = {
@@ -53,11 +51,8 @@ export type ChangeRequestData = {
   createdAt: string;
   submittedDate: string;
   customerName: string;
-  customerKana: string;
-  memberNumber: string;
-  changeItems: string[];
-  changeItemsOther: string;
-  beforeDetail: string;
-  afterDetail: string;
-  signatureName: string;
+  customerPhone: string;
+  customerEmail: string;
+  newCourseName: string;
+  signatureImage: string;
 };
