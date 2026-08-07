@@ -90,7 +90,7 @@ button {
 
 .pdf-viewer-frame {
   width: 100%;
-  max-width: 480px;
+  max-width: 860px;
   aspect-ratio: 210 / 297;
   margin: 0 auto;
   border: 1px solid #cfcac1;

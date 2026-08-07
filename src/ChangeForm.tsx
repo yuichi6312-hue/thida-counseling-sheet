@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import DateSelect from "./DateSelect";
 import { captureElementImage, shareOrDownloadImage } from "./imageExport";
 import { openMailDraft } from "./mailer";
 import ModeTabs, { type DocMode } from "./ModeTabs";
@@ -125,9 +126,9 @@ function ChangeForm({ mode, onModeChange }: ChangeFormProps) {
             <h2>基本情報</h2>
           </div>
           <div className="form-grid three">
-            <label>
+            <label className="wide">
               提出日
-              <input type="date" value={data.submittedDate} onChange={(event) => update("submittedDate", event.target.value)} />
+              <DateSelect value={data.submittedDate} onChange={(value) => update("submittedDate", value)} />
             </label>
             <label>
               お名前
@@ -146,7 +147,7 @@ function ChangeForm({ mode, onModeChange }: ChangeFormProps) {
                 placeholder="例：sample@example.com"
               />
             </label>
-            <label>
+            <label className="wide">
               変更後コース名
               <input value={data.newCourseName} onChange={(event) => update("newCourseName", event.target.value)} placeholder="例：月額フリーコース" />
             </label>

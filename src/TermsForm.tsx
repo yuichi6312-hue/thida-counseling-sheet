@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import DateSelect from "./DateSelect";
 import { captureElementImage, shareOrDownloadImage } from "./imageExport";
 import { openMailDraft } from "./mailer";
 import ModeTabs, { type DocMode } from "./ModeTabs";
@@ -166,9 +167,9 @@ function TermsForm({ mode, onModeChange }: TermsFormProps) {
             <h2>基本情報</h2>
           </div>
           <div className="form-grid three">
-            <label>
+            <label className="wide">
               契約日
-              <input type="date" value={data.agreementDate} onChange={(event) => update("agreementDate", event.target.value)} />
+              <DateSelect value={data.agreementDate} onChange={(value) => update("agreementDate", value)} />
             </label>
             <label>
               お客様名
@@ -197,7 +198,7 @@ function TermsForm({ mode, onModeChange }: TermsFormProps) {
           </div>
           <p className="entry-lead">規約書（PDF）をご確認のうえ、下記にご同意・ご署名をお願いいたします。</p>
           <div className="pdf-viewer-frame">
-            <iframe src="./terms.pdf" title="規約書PDF" />
+            <iframe src="./terms.pdf#toolbar=0&view=FitH" title="規約書PDF" />
           </div>
           <a className="pdf-open-link" href="./terms.pdf" target="_blank" rel="noreferrer">
             PDFが表示されない場合はこちらで開く

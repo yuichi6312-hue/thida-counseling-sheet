@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import DateSelect from "./DateSelect";
 import { captureElementImage, shareOrDownloadImage } from "./imageExport";
 import { openMailDraft } from "./mailer";
 import ModeTabs, { type DocMode } from "./ModeTabs";
@@ -125,9 +126,9 @@ function CancellationForm({ mode, onModeChange }: CancellationFormProps) {
             <h2>基本情報</h2>
           </div>
           <div className="form-grid three">
-            <label>
+            <label className="wide">
               届出日
-              <input type="date" value={data.submittedDate} onChange={(event) => update("submittedDate", event.target.value)} />
+              <DateSelect value={data.submittedDate} onChange={(value) => update("submittedDate", value)} />
             </label>
             <label>
               お名前
@@ -146,9 +147,9 @@ function CancellationForm({ mode, onModeChange }: CancellationFormProps) {
                 placeholder="例：sample@example.com"
               />
             </label>
-            <label>
+            <label className="wide">
               解約日（月末日付）
-              <input type="date" value={data.cancellationDate} onChange={(event) => update("cancellationDate", event.target.value)} />
+              <DateSelect value={data.cancellationDate} onChange={(value) => update("cancellationDate", value)} />
             </label>
           </div>
         </section>
