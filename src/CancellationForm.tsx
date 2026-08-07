@@ -12,6 +12,8 @@ const createId = () =>
 
 const today = () => new Date().toISOString().slice(0, 10);
 
+const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
+
 const emptyCancellation = (): CancellationData => ({
   id: createId(),
   createdAt: new Date().toISOString(),
@@ -147,9 +149,16 @@ function CancellationForm({ mode, onModeChange }: CancellationFormProps) {
                 placeholder="例：sample@example.com"
               />
             </label>
-            <label className="wide">
+            <label>
               解約日（月末日付）
-              <DateSelect value={data.cancellationDate} onChange={(value) => update("cancellationDate", value)} />
+              <select value={data.cancellationDate} onChange={(event) => update("cancellationDate", event.target.value)}>
+                <option value="">月を選択</option>
+                {MONTHS.map((m) => (
+                  <option key={m} value={m}>
+                    {m}月末日
+                  </option>
+                ))}
+              </select>
             </label>
           </div>
         </section>
@@ -237,7 +246,7 @@ function CancellationForm({ mode, onModeChange }: CancellationFormProps) {
               </div>
               <div>
                 <label>解約日（月末日付）</label>
-                <p>{data.cancellationDate || "－"}</p>
+                <p>{data.cancellationDate ? `${data.cancellationDate}月末日` : "－"}</p>
               </div>
             </div>
           </div>
