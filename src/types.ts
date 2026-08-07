@@ -22,3 +22,42 @@ export type CounselingSheetData = {
   goal: string;
   priorExperience: string;
 };
+
+export type TermsAgreementData = {
+  id: string;
+  createdAt: string;
+  agreementDate: string;
+  customerName: string;
+  customerKana: string;
+  termsBody: string;
+  agreed: boolean;
+  signatureName: string;
+};
+
+export type CancellationData = {
+  id: string;
+  createdAt: string;
+  submittedDate: string;
+  customerName: string;
+  customerKana: string;
+  memberNumber: string;
+  joinDate: string;
+  cancellationDate: string;
+  reasons: string[];
+  reasonOther: string;
+  signatureName: string;
+};
+
+export type ChangeRequestData = {
+  id: string;
+  createdAt: string;
+  submittedDate: string;
+  customerName: string;
+  customerKana: string;
+  memberNumber: string;
+  changeItems: string[];
+  changeItemsOther: string;
+  beforeDetail: string;
+  afterDetail: string;
+  signatureName: string;
+};
