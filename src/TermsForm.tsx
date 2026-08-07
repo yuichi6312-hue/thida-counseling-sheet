@@ -74,12 +74,10 @@ function TermsForm({ mode, onModeChange }: TermsFormProps) {
   const [savedItems, setSavedItems] = useState<TermsAgreementData[]>(() => termsStorage.getAll());
   const [status, setStatus] = useState("");
   const [isSavingImage, setIsSavingImage] = useState(false);
-  const [showPdfNotice, setShowPdfNotice] = useState(false);
   const printRef = useRef<HTMLElement>(null);
 
   const handleOpenPdf = () => {
     window.open("./terms.pdf", "_blank", "noopener,noreferrer");
-    setShowPdfNotice(true);
   };
 
   const update = <K extends keyof TermsAgreementData>(key: K, value: TermsAgreementData[K]) => {
@@ -206,14 +204,6 @@ function TermsForm({ mode, onModeChange }: TermsFormProps) {
           <button type="button" className="secondary-button" onClick={handleOpenPdf}>
             規約書PDFを確認する（別タブで開く）
           </button>
-          {showPdfNotice ? (
-            <div className="pdf-return-notice">
-              <span>別のタブで規約書PDFを開きました。ご確認後、こちらのタブに戻って同意・署名にお進みください。</span>
-              <button type="button" className="ghost-button" onClick={() => setShowPdfNotice(false)}>
-                ← 戻る
-              </button>
-            </div>
-          ) : null}
         </section>
 
         <section className="panel no-print">
