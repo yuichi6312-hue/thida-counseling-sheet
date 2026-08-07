@@ -193,16 +193,15 @@ function TermsForm({ mode, onModeChange }: TermsFormProps) {
         <section className="panel no-print">
           <div className="section-heading">
             <span>02</span>
-            <h2>規約内容</h2>
+            <h2>規約内容のご確認</h2>
           </div>
-          <label>
-            規約本文
-            <textarea
-              className="terms-body-input"
-              value={data.termsBody}
-              onChange={(event) => update("termsBody", event.target.value)}
-            />
-          </label>
+          <p className="entry-lead">規約書（PDF）をご確認のうえ、下記にご同意・ご署名をお願いいたします。</p>
+          <div className="pdf-viewer-frame">
+            <iframe src="./terms.pdf" title="規約書PDF" />
+          </div>
+          <a className="pdf-open-link" href="./terms.pdf" target="_blank" rel="noreferrer">
+            PDFが表示されない場合はこちらで開く
+          </a>
         </section>
 
         <section className="panel no-print">
