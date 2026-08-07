@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import DateSelect from "./DateSelect";
 import { captureElementImage, shareOrDownloadImage } from "./imageExport";
-import { openMailDraft } from "./mailer";
+import { shareImageForEmail } from "./mailer";
 import ModeTabs, { type DocMode } from "./ModeTabs";
 import SignaturePad from "./SignaturePad";
 import { cancellationStorage } from "./storage";
@@ -92,15 +92,19 @@ function CancellationForm({ mode, onModeChange }: CancellationFormProps) {
       return;
     }
     const blob = await saveAsImage();
-    if (blob) {
-      await shareOrDownloadImage(blob, `解約届_${data.customerName || "無題"}_${data.submittedDate}.png`);
-    }
-    openMailDraft(
+    if (!blob) return;
+    const result = await shareImageForEmail(
+      blob,
+      `解約届_${data.customerName || "無題"}_${data.submittedDate}.png`,
       data.customerEmail,
       "【THIDA】解約届のご案内",
       `${data.customerName} 様\n\n解約届をお送りいたします。\n\nTHIDA`
     );
-    setStatus("画像を保存しました。開いたメール作成画面に画像を添付して送信してください。");
+    if (result === "shared") {
+      setStatus(`共有メニューの「メール」を選ぶと画像添付済みで作成できます。宛先に ${data.customerEmail} を入力して送信してください。`);
+    } else if (result === "fallback") {
+      setStatus("画像を保存しました。開いたメール作成画面に画像を添付して送信してください。");
+    }
   };
 
   return (
