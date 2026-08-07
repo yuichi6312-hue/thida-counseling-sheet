@@ -1,7 +1,7 @@
 export const openMailDraft = (to: string, subject: string, body: string) => {
-  const params = new URLSearchParams();
-  if (subject) params.set("subject", subject);
-  if (body) params.set("body", body);
-  const query = params.toString();
+  const params: string[] = [];
+  if (subject) params.push(`subject=${encodeURIComponent(subject)}`);
+  if (body) params.push(`body=${encodeURIComponent(body)}`);
+  const query = params.join("&");
   window.location.href = `mailto:${to}${query ? `?${query}` : ""}`;
 };

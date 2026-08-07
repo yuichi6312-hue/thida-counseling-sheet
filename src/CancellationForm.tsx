@@ -95,7 +95,7 @@ function CancellationForm({ mode, onModeChange }: CancellationFormProps) {
     openMailDraft(
       data.customerEmail,
       "【THIDA】解約届のご案内",
-      `${data.customerName} 様\n\n解約届をお送りいたします。先ほど保存された画像をこのメールに添付してご送付ください。\n\nTHIDA`
+      `${data.customerName} 様\n\n解約届をお送りいたします。\n\nTHIDA`
     );
     setStatus("画像を保存しました。開いたメール作成画面に画像を添付して送信してください。");
   };

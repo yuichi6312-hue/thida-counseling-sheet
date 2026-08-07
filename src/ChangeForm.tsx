@@ -95,7 +95,7 @@ function ChangeForm({ mode, onModeChange }: ChangeFormProps) {
     openMailDraft(
       data.customerEmail,
       "【THIDA】変更届のご案内",
-      `${data.customerName} 様\n\n変更届をお送りいたします。先ほど保存された画像をこのメールに添付してご送付ください。\n\nTHIDA`
+      `${data.customerName} 様\n\n変更届をお送りいたします。\n\nTHIDA`
     );
     setStatus("画像を保存しました。開いたメール作成画面に画像を添付して送信してください。");
   };

@@ -136,7 +136,7 @@ function TermsForm({ mode, onModeChange }: TermsFormProps) {
     openMailDraft(
       data.customerEmail,
       "【THIDA】規約書のご案内",
-      `${data.customerName} 様\n\n規約書をお送りいたします。先ほど保存された画像をこのメールに添付してご送付ください。\n\nTHIDA`
+      `${data.customerName} 様\n\n規約書をお送りいたします。\n\nTHIDA`
     );
     setStatus("画像を保存しました。開いたメール作成画面に画像を添付して送信してください。");
   };
