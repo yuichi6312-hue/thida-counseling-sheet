@@ -74,7 +74,13 @@ function TermsForm({ mode, onModeChange }: TermsFormProps) {
   const [savedItems, setSavedItems] = useState<TermsAgreementData[]>(() => termsStorage.getAll());
   const [status, setStatus] = useState("");
   const [isSavingImage, setIsSavingImage] = useState(false);
+  const [showPdfNotice, setShowPdfNotice] = useState(false);
   const printRef = useRef<HTMLElement>(null);
+
+  const handleOpenPdf = () => {
+    window.open("./terms.pdf", "_blank", "noopener,noreferrer");
+    setShowPdfNotice(true);
+  };
 
   const update = <K extends keyof TermsAgreementData>(key: K, value: TermsAgreementData[K]) => {
     setData((current) => ({ ...current, [key]: value }));
@@ -197,12 +203,17 @@ function TermsForm({ mode, onModeChange }: TermsFormProps) {
             <h2>規約内容のご確認</h2>
           </div>
           <p className="entry-lead">規約書（PDF）をご確認のうえ、下記にご同意・ご署名をお願いいたします。</p>
-          <div className="pdf-viewer-frame">
-            <iframe src="./terms.pdf#toolbar=0&view=FitH" title="規約書PDF" />
-          </div>
-          <a className="pdf-open-link" href="./terms.pdf" target="_blank" rel="noreferrer">
-            PDFが表示されない場合はこちらで開く
-          </a>
+          <button type="button" className="secondary-button" onClick={handleOpenPdf}>
+            規約書PDFを確認する（別タブで開く）
+          </button>
+          {showPdfNotice ? (
+            <div className="pdf-return-notice">
+              <span>別のタブで規約書PDFを開きました。ご確認後、こちらのタブに戻って同意・署名にお進みください。</span>
+              <button type="button" className="ghost-button" onClick={() => setShowPdfNotice(false)}>
+                ← 戻る
+              </button>
+            </div>
+          ) : null}
         </section>
 
         <section className="panel no-print">

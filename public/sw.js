@@ -1,4 +1,4 @@
-const CACHE_NAME = "thida-counseling-sheet-v1";
+const CACHE_NAME = "thida-counseling-sheet-v2";
 const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (event) => {
@@ -15,21 +15,21 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// Network-first: always try to fetch the latest build. A stale cached shell can
+// reference hashed asset filenames from a previous deploy that no longer exist,
+// which breaks the app entirely. Cache is only a fallback when offline.
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const network = fetch(event.request)
-        .then((response) => {
-          if (response && response.status === 200) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return response;
-        })
-        .catch(() => cached);
-      return cached || network;
-    })
+    fetch(event.request)
+      .then((response) => {
+        if (response && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        }
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
