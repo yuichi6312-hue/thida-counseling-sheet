@@ -56,3 +56,15 @@ export type ChangeRequestData = {
   newCourseName: string;
   signatureImage: string;
 };
+
+export type SpecialLeaveData = {
+  id: string;
+  createdAt: string;
+  submittedDate: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  leaveMonth: string;
+  validUntilMonth: string;
+  signatureImage: string;
+};
