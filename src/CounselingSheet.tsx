@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import BodyDiagram from "./BodyDiagram";
 import { connectGoogleDrive, disconnectGoogleDrive, isDriveConfigured, uploadKarteImage } from "./googleDrive";
 import { captureElementImage, shareOrDownloadImage } from "./imageExport";
 import ModeTabs, { type DocMode } from "./ModeTabs";
@@ -32,7 +33,8 @@ const emptySheet = (): CounselingSheetData => ({
   concerns: [],
   concernsOther: "",
   goal: "",
-  priorExperience: ""
+  priorExperience: "",
+  bodyMarks: []
 });
 
 const HEALTH_CONDITIONS = [
@@ -532,6 +534,15 @@ function CounselingSheet({ mode, onModeChange }: CounselingSheetProps) {
           </div>
         </section>
 
+        <section className="panel no-print">
+          <div className="section-heading">
+            <span>05</span>
+            <h2>気になる部分・鍛えたい部分</h2>
+          </div>
+          <p className="muted">体の図をタップして、気になる部分・鍛えたい部分をマークしてください。マークをもう一度タップすると消せます。</p>
+          <BodyDiagram marks={sheet.bodyMarks} onChange={(marks) => update("bodyMarks", marks)} />
+        </section>
+
         {stage === "entry" ? (
           <section className="panel no-print entry-submit">
             <button className="primary-button entry-submit-button" onClick={finishEntry}>
@@ -545,7 +556,7 @@ function CounselingSheet({ mode, onModeChange }: CounselingSheetProps) {
           <>
             <section className="panel no-print">
               <div className="section-heading">
-                <span>05</span>
+                <span>06</span>
                 <h2>保存済みシート</h2>
               </div>
               <div className="action-row">
@@ -672,6 +683,11 @@ function CounselingSheet({ mode, onModeChange }: CounselingSheetProps) {
                   <span>目標：{sheet.goal || "－"}</span>
                   <span>経験：{sheet.priorExperience || "－"}</span>
                 </div>
+              </div>
+
+              <div className="karte-block">
+                <h3>気になる部分・鍛えたい部分</h3>
+                <BodyDiagram marks={sheet.bodyMarks} readOnly />
               </div>
             </section>
           </>

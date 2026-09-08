@@ -607,6 +607,53 @@ input[type="range"]::-moz-range-thumb {
   object-fit: contain;
 }
 
+.body-diagram-field {
+  display: grid;
+  gap: 10px;
+}
+
+.body-diagram {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  border: 1px solid #dedbd4;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+  cursor: crosshair;
+  touch-action: manipulation;
+}
+
+.body-diagram img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+.body-diagram-pin {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  margin-left: -10px;
+  margin-top: -10px;
+  border-radius: 50%;
+  background: #9b1c1c;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px rgba(17, 17, 17, 0.2);
+  cursor: pointer;
+}
+
+.body-diagram--readonly {
+  cursor: default;
+}
+
+.body-diagram--readonly .body-diagram-pin {
+  cursor: default;
+}
+
 .karte-footer {
   border-top: 1px solid #dedbd4;
   padding-top: 10px;

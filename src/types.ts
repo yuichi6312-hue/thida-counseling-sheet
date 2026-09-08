@@ -1,5 +1,10 @@
 export type Gender = "male" | "female" | "other" | "";
 
+export type BodyMark = {
+  x: number;
+  y: number;
+};
+
 export type CounselingSheetData = {
   id: string;
   createdAt: string;
@@ -21,6 +26,7 @@ export type CounselingSheetData = {
   concernsOther: string;
   goal: string;
   priorExperience: string;
+  bodyMarks: BodyMark[];
 };
 
 export type TermsAgreementData = {
