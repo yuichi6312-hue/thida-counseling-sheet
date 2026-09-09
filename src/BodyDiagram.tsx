@@ -7,6 +7,25 @@ type BodyDiagramProps = {
   readOnly?: boolean;
 };
 
+type BodyPartOption = {
+  label: string;
+  points: { x: number; y: number }[];
+};
+
+const BODY_PART_OPTIONS: BodyPartOption[] = [
+  { label: "顔", points: [{ x: 24, y: 6 }] },
+  { label: "肩", points: [{ x: 14, y: 19 }, { x: 34, y: 19 }] },
+  { label: "二の腕", points: [{ x: 9, y: 31 }, { x: 39, y: 31 }] },
+  { label: "背中", points: [{ x: 73, y: 24 }] },
+  { label: "ヒップ", points: [{ x: 67, y: 53 }, { x: 83, y: 53 }] },
+  { label: "腰回り", points: [{ x: 67, y: 47 }, { x: 82, y: 47 }] },
+  { label: "ウエスト", points: [{ x: 24, y: 42 }] },
+  { label: "前もも", points: [{ x: 20, y: 63 }, { x: 29, y: 63 }] },
+  { label: "裏もも", points: [{ x: 68, y: 63 }, { x: 82, y: 63 }] },
+  { label: "ふくらはぎ", points: [{ x: 68, y: 78 }, { x: 82, y: 78 }] },
+  { label: "足首", points: [{ x: 21, y: 88 }, { x: 28, y: 88 }] }
+];
+
 function BodyDiagram({ marks, onChange, readOnly = false }: BodyDiagramProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -26,6 +45,25 @@ function BodyDiagram({ marks, onChange, readOnly = false }: BodyDiagramProps) {
     onChange(marks.filter((_, i) => i !== index));
   };
 
+  const isPartChecked = (option: BodyPartOption) =>
+    option.points.every((point) => marks.some((mark) => mark.label === option.label && mark.x === point.x && mark.y === point.y));
+
+  const toggleBodyPart = (option: BodyPartOption) => {
+    if (readOnly || !onChange) return;
+    const withoutLabel = marks.filter((mark) => mark.label !== option.label);
+    if (isPartChecked(option)) {
+      onChange(withoutLabel);
+    } else {
+      onChange([...withoutLabel, ...option.points.map((point) => ({ ...point, label: option.label }))]);
+    }
+  };
+
+  const selectedLabels = readOnly
+    ? BODY_PART_OPTIONS.filter((option) => option.points.some((point) => marks.some((mark) => mark.label === option.label && mark.x === point.x && mark.y === point.y))).map(
+        (option) => option.label
+      )
+    : [];
+
   return (
     <div className="body-diagram-field">
       <div
@@ -43,11 +81,26 @@ function BodyDiagram({ marks, onChange, readOnly = false }: BodyDiagramProps) {
           />
         ))}
       </div>
+
       {!readOnly ? (
-        <div className="action-row">
-          <button type="button" className="ghost-button" onClick={() => onChange?.([])} disabled={!marks.length}>
-            マークをクリア
-          </button>
+        <>
+          <div className="checkbox-grid">
+            {BODY_PART_OPTIONS.map((option) => (
+              <label key={option.label} className="checkbox-item">
+                <input type="checkbox" checked={isPartChecked(option)} onChange={() => toggleBodyPart(option)} />
+                {option.label}
+              </label>
+            ))}
+          </div>
+          <div className="action-row">
+            <button type="button" className="ghost-button" onClick={() => onChange?.([])} disabled={!marks.length}>
+              マークをクリア
+            </button>
+          </div>
+        </>
+      ) : selectedLabels.length ? (
+        <div className="karte-detail-row">
+          <span>選択した部位：{selectedLabels.join("、")}</span>
         </div>
       ) : null}
     </div>

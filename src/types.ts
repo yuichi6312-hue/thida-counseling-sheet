@@ -3,6 +3,7 @@ export type Gender = "male" | "female" | "other" | "";
 export type BodyMark = {
   x: number;
   y: number;
+  label?: string;
 };
 
 export type CounselingSheetData = {

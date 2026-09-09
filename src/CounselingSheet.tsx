@@ -539,7 +539,9 @@ function CounselingSheet({ mode, onModeChange }: CounselingSheetProps) {
             <span>05</span>
             <h2>気になる部分・鍛えたい部分</h2>
           </div>
-          <p className="muted">体の図をタップして、気になる部分・鍛えたい部分をマークしてください。マークをもう一度タップすると消せます。</p>
+          <p className="muted">
+            体の図を直接タップするか、下のリストから部位を選ぶと、気になる部分・鍛えたい部分にマークが付きます。マークをもう一度タップすると消せます。
+          </p>
           <BodyDiagram marks={sheet.bodyMarks} onChange={(marks) => update("bodyMarks", marks)} />
         </section>
 
