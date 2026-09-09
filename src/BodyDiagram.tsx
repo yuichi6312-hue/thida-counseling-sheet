@@ -14,6 +14,7 @@ type BodyPartOption = {
 
 const BODY_PART_OPTIONS: BodyPartOption[] = [
   { label: "顔", points: [{ x: 24, y: 6 }] },
+  { label: "首", points: [{ x: 24, y: 11 }] },
   { label: "胸", points: [{ x: 19, y: 23 }, { x: 29, y: 23 }] },
   { label: "肩", points: [{ x: 68, y: 15 }, { x: 82, y: 15 }] },
   { label: "二の腕", points: [{ x: 66, y: 32 }, { x: 85, y: 32 }] },
