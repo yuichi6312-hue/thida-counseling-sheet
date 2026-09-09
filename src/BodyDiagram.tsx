@@ -14,15 +14,15 @@ type BodyPartOption = {
 
 const BODY_PART_OPTIONS: BodyPartOption[] = [
   { label: "顔", points: [{ x: 24, y: 6 }] },
-  { label: "肩", points: [{ x: 14, y: 19 }, { x: 34, y: 19 }] },
-  { label: "二の腕", points: [{ x: 9, y: 31 }, { x: 39, y: 31 }] },
-  { label: "背中", points: [{ x: 73, y: 24 }] },
-  { label: "ヒップ", points: [{ x: 67, y: 53 }, { x: 83, y: 53 }] },
-  { label: "腰回り", points: [{ x: 67, y: 47 }, { x: 82, y: 47 }] },
+  { label: "肩", points: [{ x: 68, y: 15 }, { x: 82, y: 15 }] },
+  { label: "二の腕", points: [{ x: 66, y: 32 }, { x: 85, y: 32 }] },
+  { label: "背中", points: [{ x: 71, y: 26 }, { x: 81, y: 26 }] },
+  { label: "ヒップ", points: [{ x: 73, y: 56 }, { x: 81, y: 56 }] },
+  { label: "腰回り", points: [{ x: 69, y: 42 }, { x: 83, y: 42 }] },
   { label: "ウエスト", points: [{ x: 24, y: 42 }] },
   { label: "前もも", points: [{ x: 20, y: 63 }, { x: 29, y: 63 }] },
-  { label: "裏もも", points: [{ x: 68, y: 63 }, { x: 82, y: 63 }] },
-  { label: "ふくらはぎ", points: [{ x: 68, y: 78 }, { x: 82, y: 78 }] },
+  { label: "裏もも", points: [{ x: 71, y: 64 }, { x: 80, y: 64 }] },
+  { label: "ふくらはぎ", points: [{ x: 70, y: 78 }, { x: 83, y: 78 }] },
   { label: "足首", points: [{ x: 21, y: 88 }, { x: 28, y: 88 }] }
 ];
 
