@@ -22,7 +22,7 @@ const BODY_PART_OPTIONS: BodyPartOption[] = [
   { label: "ウエスト", points: [{ x: 24, y: 42 }] },
   { label: "前もも", points: [{ x: 20, y: 63 }, { x: 29, y: 63 }] },
   { label: "裏もも", points: [{ x: 71, y: 64 }, { x: 80, y: 64 }] },
-  { label: "膝", points: [{ x: 70, y: 70 }, { x: 82, y: 70 }] },
+  { label: "膝", points: [{ x: 20, y: 70 }, { x: 29, y: 70 }] },
   { label: "ふくらはぎ", points: [{ x: 70, y: 78 }, { x: 83, y: 78 }] },
   { label: "足首", points: [{ x: 21, y: 88 }, { x: 28, y: 88 }] }
 ];
