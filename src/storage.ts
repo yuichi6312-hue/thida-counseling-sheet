@@ -29,7 +29,9 @@ const makeListStorage = <T extends { id: string }>(key: string) => {
 };
 
 export const getSavedCounselingSheets = () => {
-  return safeParse<CounselingSheetData[]>(localStorage.getItem(COUNSELING_KEY), []);
+  const sheets = safeParse<CounselingSheetData[]>(localStorage.getItem(COUNSELING_KEY), []);
+  // 体の図マーキング機能追加前に保存されたデータには bodyMarks が存在しないため補完する
+  return sheets.map((sheet) => ({ ...sheet, bodyMarks: sheet.bodyMarks ?? [] }));
 };
 
 export const saveCounselingSheet = (sheet: CounselingSheetData) => {
