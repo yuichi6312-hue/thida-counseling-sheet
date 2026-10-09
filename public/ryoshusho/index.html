@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>領収証プリント</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#DCE7E6; --surface:#F7FAF9; --ink:#10242C; --muted:#50666E; --line:#B4C6C5;
+  --sun:#F5B301; --sun-ink:#231A00; --sea:#0B6E79; --on-sea:#FFFFFF; --danger:#B3261E;
+  --shadow:rgba(16,36,44,.38); --field:#FFFFFF;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1B21; --surface:#16282F; --ink:#E8F0EF; --muted:#9DB2B6; --line:#2E444C;
+    --sea:#5CC4CF; --on-sea:#06262B; --danger:#FF8A80; --shadow:rgba(0,0,0,.6); --field:#0F1F25;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1B21; --surface:#16282F; --ink:#E8F0EF; --muted:#9DB2B6; --line:#2E444C;
+  --sea:#5CC4CF; --on-sea:#06262B; --danger:#FF8A80; --shadow:rgba(0,0,0,.6); --field:#0F1F25;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Noto Sans JP",system-ui,sans-serif;
+  font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%;
+}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--sea);outline-offset:2px}
+
+.app{max-width:1120px;margin:0 auto;padding:18px clamp(14px,3vw,28px) 40px}
+
+.top{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.top h1{
+  margin:0;font-family:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  font-weight:700;font-size:34px;line-height:1.2;letter-spacing:.28em;
+}
+.top-actions{display:flex;gap:8px}
+.btn-quiet{
+  background:transparent;border:1.5px solid var(--line);border-radius:8px;
+  padding:8px 16px;min-height:44px;font-weight:500;
+}
+.btn-quiet:hover{border-color:var(--ink)}
+a.btn-quiet{color:inherit}
+
+.issuer-bar{display:flex;align-items:center;gap:12px;margin:16px 0 20px;flex-wrap:wrap}
+.issuer-bar .label{font-size:13px;color:var(--muted);flex:none}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{
+  background:transparent;border:1.5px solid var(--line);border-radius:999px;
+  padding:8px 18px;min-height:44px;font-weight:500;
+}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chip.add{border-style:dashed;color:var(--muted)}
+.chips.small .chip{min-height:38px;padding:5px 14px;font-size:14px}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,380px);gap:28px;align-items:start}
+
+.panel{background:var(--surface);border-radius:14px;padding:22px clamp(16px,2.4vw,26px)}
+.field{margin-bottom:20px}
+.field:last-child{margin-bottom:0}
+.field > label,.field > .label{display:block;font-size:14px;font-weight:700;margin-bottom:6px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row > input{flex:1 1 200px;min-width:0}
+input[type="text"],input[type="date"],input[type="tel"],input[type="url"],input[type="number"],input:not([type]),textarea{
+  width:100%;background:var(--field);border:1.5px solid var(--line);border-radius:8px;
+  padding:10px 12px;min-height:46px;font-size:17px;
+}
+textarea{resize:vertical;line-height:1.5}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
+input:focus,textarea:focus{border-color:var(--sea);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--sea) 25%,transparent)}
+.suffix{color:var(--muted);flex:none}
+
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:8px;overflow:hidden;background:var(--field);flex:none}
+.seg button{background:transparent;border:0;border-right:1.5px solid var(--line);padding:8px 16px;min-height:44px;font-weight:500;white-space:nowrap}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--sea);color:var(--on-sea)}
+
+.amount{display:flex;align-items:baseline;gap:8px;background:var(--field);border:1.5px solid var(--line);border-radius:8px;padding:6px 14px}
+.amount:focus-within{border-color:var(--sea);box-shadow:0 0 0 3px color-mix(in srgb,var(--sea) 25%,transparent)}
+.amount span{font-size:22px;color:var(--muted)}
+.amount input{border:0;background:transparent;padding:0;min-height:52px;font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;text-align:right;box-shadow:none}
+.amount.small input{font-size:22px;min-height:40px}
+.amount.bad{border-color:var(--danger)}
+.hint{margin:6px 0 0;font-size:13px;color:var(--muted);min-height:1.6em}
+.sub{margin-top:12px}
+.sub label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.pair{display:grid;grid-template-columns:minmax(0,180px) minmax(0,1fr);gap:20px}
+.notice{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-left:4px solid var(--sun);padding:8px 12px;font-size:14px;background:color-mix(in srgb,var(--sun) 14%,transparent);border-radius:0 8px 8px 0}
+.link{background:none;border:0;padding:6px 4px;min-height:36px;color:var(--sea);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+
+.side{position:sticky;top:calc(env(safe-area-inset-top,0px) + 14px)}
+.paper{position:relative;background:#fff;overflow:hidden;box-shadow:0 22px 30px -20px var(--shadow)}
+.paper::before,.paper::after{
+  content:"";position:absolute;left:0;right:0;height:7px;z-index:1;
+  background:linear-gradient(135deg,var(--bg) 33%,transparent 33%) 0 0/14px 14px,
+             linear-gradient(225deg,var(--bg) 33%,transparent 33%) 0 0/14px 14px;
+}
+.paper::before{top:0}
+.paper::after{bottom:0;transform:scaleY(-1)}
+#paperInner{width:576px;transform-origin:0 0}
+@keyframes feed{from{transform:translateY(-18px);opacity:.4}to{transform:none;opacity:1}}
+.paper.feed{animation:feed .42s cubic-bezier(.2,.7,.2,1)}
+@media (prefers-reduced-motion:reduce){.paper.feed{animation:none}}
+
+.action{display:flex;align-items:center;gap:14px;margin-top:18px}
+.action-sum{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.action-sum span{font-size:13px;color:var(--muted)}
+.action-sum strong{font-size:22px;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-primary{
+  background:var(--sun);color:var(--sun-ink);border:0;border-radius:10px;
+  padding:12px 30px;min-height:54px;font-size:18px;font-weight:700;flex:none;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;
+}
+.btn-primary:active{transform:translateY(1px)}
+
+@media (max-width:820px){
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .side{position:static}
+  .paper-wrap{max-width:380px;margin:0 auto}
+  .app{padding-bottom:120px}
+  .action{
+    position:fixed;left:0;right:0;bottom:0;margin:0;z-index:5;
+    background:var(--surface);border-top:1.5px solid var(--line);
+    padding:10px clamp(14px,3vw,28px) calc(10px + env(safe-area-inset-bottom,0px));
+  }
+  .pair{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:480px){
+  .top h1{font-size:28px}
+  .seg button{padding:8px 12px}
+}
+
+dialog{
+  border:0;border-radius:14px;padding:0;background:var(--surface);color:var(--ink);
+  width:min(620px,calc(100vw - 24px));max-height:calc(100% - 40px);
+}
+dialog::backdrop{background:rgba(6,20,26,.55)}
+.dlg-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;background:var(--surface);border-bottom:1.5px solid var(--line)}
+.dlg-head h2{margin:0;font-size:20px}
+.dlg-body{padding:20px}
+.dlg-body h3{margin:0 0 4px;font-size:16px}
+.dlg-body p{margin:0 0 12px;font-size:14px;color:var(--muted)}
+.dlg-body section + section{margin-top:28px;padding-top:22px;border-top:1.5px solid var(--line)}
+.issuer-card{border:1.5px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px}
+.issuer-card .field{margin-bottom:12px}
+.issuer-card .field label{font-weight:500;font-size:13px;color:var(--muted)}
+.card-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.danger{color:var(--danger)}
+.warn{font-size:13px;color:var(--danger);margin:4px 0 0}
+.hist{list-style:none;margin:0;padding:0}
+.hist li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:12px 0;border-bottom:1.5px solid var(--line)}
+.hist li:last-child{border-bottom:0}
+.hist .h-main{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist .h-amt{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.hist .h-sub{font-size:13px;color:var(--muted)}
+.hist .h-act{display:flex;gap:6px;justify-content:flex-end}
+.empty{padding:28px 8px;text-align:center;color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:10px}
+.stack .btn-primary,.stack .btn-quiet{width:100%}
+.steps{margin:0 0 16px;padding-left:1.4em;font-size:15px}
+.steps li{margin-bottom:6px}
+#linkBox{font-size:12px;min-height:90px;word-break:break-all}
+#toast{
+  position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+  background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:8px;font-size:15px;
+  max-width:calc(100vw - 32px);z-index:50;opacity:0;pointer-events:none;transition:opacity .2s;
+}
+#toast.on{opacity:1}
+
+/* 印字レイアウト（プレビューと印刷で同じもの。576ドット幅・白黒のみ） */
+.rc{width:576px;padding:22px 22px 34px;background:#fff;color:#000;font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;font-size:24px;line-height:1.5;font-weight:500;-webkit-text-size-adjust:100%;text-align:left}
+.rc,.rc *{box-sizing:border-box;margin:0}
+.rc-title{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;font-weight:700;font-size:52px;line-height:1.3;letter-spacing:.5em;text-indent:.5em;text-align:center}
+.rc-re{text-align:center;font-size:22px}
+.rc-meta{display:flex;justify-content:space-between;font-size:22px;margin-top:14px}
+.rc-to{display:flex;align-items:flex-end;gap:12px;margin-top:26px;padding-bottom:6px;border-bottom:3px solid #000}
+.rc-to-name{flex:1;min-height:46px;font-size:34px;font-weight:700;line-height:1.3;word-break:break-all}
+.rc-to-hon{font-size:28px;white-space:nowrap}
+.rc-amt{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:28px;padding:14px 6px;border-top:5px solid #000;border-bottom:5px solid #000}
+.rc-amt-l{font-size:24px;white-space:nowrap}
+.rc-amt-v{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;font-weight:700;line-height:1.1;white-space:nowrap}
+.rc-incl{text-align:right;font-size:20px;margin-top:4px}
+.rc-memo{margin-top:16px;font-size:26px;word-break:break-all}
+.rc-recv{margin-top:6px;font-size:24px}
+.rc-break{margin-top:22px;padding-top:10px;border-top:2px solid #000;font-size:21px}
+.rc-brk{display:flex;justify-content:space-between;gap:12px;white-space:nowrap}
+.rc-brk-tax{text-align:right;white-space:nowrap;margin-bottom:4px}
+.rc-pay{margin-top:10px;font-size:21px}
+.rc-foot{display:flex;gap:18px;align-items:flex-start;margin-top:30px}
+.rc-stamp{flex:none;width:104px;height:124px;border:2px solid #000;display:flex;align-items:center;justify-content:center;text-align:center;font-size:20px;line-height:1.4}
+.rc-iss{flex:1;min-width:0;font-size:21px;line-height:1.45;word-break:break-all}
+.rc-iss-n{font-size:28px;font-weight:700;line-height:1.3;margin-bottom:4px}
+.rc-none{border:2px dashed #000;padding:14px;font-size:21px;text-align:center}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <h1>領収証</h1>
+    <div class="top-actions">
+      <button type="button" class="btn-quiet" id="btnHistory">履歴</button>
+      <button type="button" class="btn-quiet" id="btnSettings">設定</button>
+    </div>
+  </header>
+
+  <div class="issuer-bar">
+    <span class="label" id="lblIssuer">発行元</span>
+    <div class="chips" id="issuerChips" role="group" aria-labelledby="lblIssuer"></div>
+  </div>
+
+  <main class="grid">
+    <div class="panel">
+      <div class="field">
+        <label for="to">宛名</label>
+        <div class="row">
+          <input id="to" type="text" autocomplete="off" placeholder="例：山田 太郎">
+          <div class="seg" role="group" aria-label="敬称" data-key="hon">
+            <button type="button" data-v="様">様</button>
+            <button type="button" data-v="御中">御中</button>
+            <button type="button" data-v="">なし</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="total">金額（税込）</label>
+        <div class="amount" id="totalBox"><span aria-hidden="true">¥</span><input id="total" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+        <p class="hint" id="amountHint"></p>
+      </div>
+
+      <div class="field">
+        <span class="label" id="lblTax">消費税率</span>
+        <div class="seg" role="group" aria-labelledby="lblTax" data-key="taxMode">
+          <button type="button" data-v="10">10%</button>
+          <button type="button" data-v="8">8%（軽減）</button>
+          <button type="button" data-v="mix">10%と8%</button>
+        </div>
+        <div class="sub" id="mixRow" hidden>
+          <label for="amt8">うち8%対象の金額（税込）</label>
+          <div class="amount small"><span aria-hidden="true">¥</span><input id="amt8" type="text" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="memo">但し書き</label>
+        <div class="row">
+          <input id="memo" type="text" autocomplete="off" placeholder="例：お品代">
+          <span class="suffix">として</span>
+        </div>
+        <div class="chips small sub" id="memoChips" role="group" aria-label="但し書きの候補">
+          <button type="button" class="chip">お品代</button>
+          <button type="button" class="chip">飲食代</button>
+          <button type="button" class="chip">トレーニング代</button>
+          <button type="button" class="chip">施術代</button>
+          <button type="button" class="chip">プリント代</button>
+        </div>
+      </div>
+
+      <div class="field pair">
+        <div>
+          <label class="label" for="date" style="display:block;font-size:14px;font-weight:700;margin-bottom:6px">日付</label>
+          <input id="date" type="date">
+        </div>
+        <div>
+          <span class="label" id="lblPay" style="display:block;font-size:14px;font-weight:700;margin-bottom:6px">支払方法</span>
+          <div class="seg" role="group" aria-labelledby="lblPay" data-key="pay">
+            <button type="button" data-v="cash">現金</button>
+            <button type="button" data-v="card">クレジット</button>
+            <button type="button" data-v="emoney">電子決済</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field notice" id="stampRow" hidden>
+        <span id="stampText"></span>
+        <button type="button" class="link" id="stampToggle"></button>
+      </div>
+    </div>
+
+    <aside class="side" aria-label="印刷プレビュー">
+      <div class="paper-wrap">
+        <div class="paper" id="paper"><div id="paperInner"></div></div>
+      </div>
+      <div class="action">
+        <div class="action-sum"><span>合計（税込）</span><strong id="sumView">¥0</strong></div>
+        <button type="button" class="btn-primary" id="btnPrint">印刷する</button>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<dialog id="dlgSettings" aria-labelledby="ttlSettings">
+  <div class="dlg-head"><h2 id="ttlSettings">設定</h2><button type="button" class="btn-quiet" data-close>閉じる</button></div>
+  <div class="dlg-body">
+    <section>
+      <h3>発行元</h3>
+      <p>領収証の下に印刷する店名や住所です。入力するとすぐ保存されます。</p>
+      <div id="issuerList"></div>
+      <button type="button" class="btn-quiet" id="btnAddIssuer">発行元を追加</button>
+    </section>
+    <section>
+      <h3>印刷</h3>
+      <p>印刷は iPad の「Star PassPRNT」アプリ経由で行います。先に PassPRNT を入れて、プリンターを Bluetooth で選んでおいてください。</p>
+      <div class="field">
+        <label for="backUrl">印刷後に戻るページの URL</label>
+        <input id="backUrl" type="url" inputmode="url" autocomplete="off" placeholder="空欄なら自動">
+        <p class="hint">印刷が終わると PassPRNT がこの URL を開きます。ふつうは空欄のままで大丈夫です。</p>
+      </div>
+      <p id="storeMode"></p>
+    </section>
+  </div>
+</dialog>
+
+<dialog id="dlgHistory" aria-labelledby="ttlHistory">
+  <div class="dlg-head"><h2 id="ttlHistory">履歴</h2><button type="button" class="btn-quiet" data-close>閉じる</button></div>
+  <div class="dlg-body"><ul class="hist" id="histList"></ul></div>
+</dialog>
+
+<dialog id="dlgSent" aria-labelledby="ttlSent">
+  <div class="dlg-head"><h2 id="ttlSent"></h2></div>
+  <div class="dlg-body">
+    <p id="sentWait">PassPRNT を開いています。</p>
+    <p id="sentTop" hidden>「PassPRNT で開きますか？」と出たら「開く」を押してください。印刷が終わるとこのページに戻ります。</p>
+    <div id="sentBlocked" hidden>
+      <p>Claude の画面の中からは、ほかのアプリを直接開けません。次の手順で印刷できます。</p>
+      <ol class="steps">
+        <li>下の「印刷リンクをコピー」を押す</li>
+        <li>Safari で新しいタブを開き、アドレス欄に貼り付けて開く</li>
+        <li>「PassPRNT で開きますか？」と出たら「開く」を押す</li>
+      </ol>
+    </div>
+    <div class="stack">
+      <button type="button" class="btn-primary" id="btnAgain" hidden>もう一度印刷に送る</button>
+      <button type="button" class="btn-primary" id="btnCopy">印刷リンクをコピー</button>
+      <textarea id="linkBox" readonly hidden aria-label="印刷リンク"></textarea>
+      <p class="hint" id="copyHint" style="margin:0"></p>
+      <button type="button" class="btn-quiet" id="btnNext">次の領収証へ</button>
+      <a class="btn-quiet" id="openLink" target="_blank" rel="noopener" style="text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center">PassPRNT をもう一度開いてみる</a>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlgResult" aria-labelledby="ttlResult">
+  <div class="dlg-head"><h2 id="ttlResult">印刷できませんでした</h2><button type="button" class="btn-quiet" data-close>閉じる</button></div>
+  <div class="dlg-body">
+    <p id="resultMsg"></p>
+    <div class="stack"><button type="button" class="btn-primary" id="btnRetry">もう一度印刷する</button></div>
+  </div>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var LS_KEY = 'ryoshusho.v1';
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  function today() {
+    var d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function yen(n) { return '¥' + Number(n || 0).toLocaleString('ja-JP'); }
+  function digits(s) {
+    return String(s == null ? '' : s)
+      .replace(/[０-９]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); })
+      .replace(/\D/g, '').slice(0, 9);
+  }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function dateJa(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || '');
+    return m ? (+m[1]) + '年' + (+m[2]) + '月' + (+m[3]) + '日' : '';
+  }
+  function pad4(n) { return String(n || 1).padStart(4, '0'); }
+  function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+  var state = {
+    settings: { issuers: [], activeId: null, backUrl: '' },
+    receipts: [],
+    form: { to: '', hon: '様', total: 0, taxMode: '10', amt8: 0, memo: '', date: today(), pay: 'cash', stampOff: false }
+  };
+  var bootAt = Date.now();
+  var dirty = false;
+  var lastUri = '';
+  var sendTimer = 0;
+  var TOP = (function () { try { return window.top === window.self; } catch (e) { return false; } })();
+
+  /* ---------- 計算 ---------- */
+  function calc(f) {
+    var total = Number(f.total) || 0, a8 = 0, a10 = 0;
+    if (f.taxMode === '8') a8 = total;
+    else if (f.taxMode === 'mix') { a8 = Math.min(Number(f.amt8) || 0, total); a10 = total - a8; }
+    else a10 = total;
+    var t10 = Math.floor(a10 * 10 / 110), t8 = Math.floor(a8 * 8 / 108);
+    return { total: total, a10: a10, a8: a8, t10: t10, t8: t8, net: total - t10 - t8 };
+  }
+  function activeIssuer() {
+    var s = state.settings;
+    for (var i = 0; i < s.issuers.length; i++) if (s.issuers[i].id === s.activeId) return s.issuers[i];
+    return s.issuers[0] || null;
+  }
+  function currentRecord() {
+    var f = state.form, i = activeIssuer(), c = calc(f);
+    return {
+      no: i ? pad4(i.seq) : '----',
+      date: f.date, to: f.to.trim(), hon: f.hon, total: c.total, taxMode: f.taxMode, amt8: c.a8,
+      memo: f.memo.trim(), pay: f.pay,
+      stamp: c.net >= 50000 && f.pay !== 'card' && !f.stampOff,
+      issuerId: i ? i.id : null,
+      issuer: i ? { name: i.name, address: i.address, tel: i.tel, regNo: i.regNo } : null
+    };
+  }
+
+  /* ---------- 印字レイアウト ---------- */
+  function receiptInner(r) {
+    var c = calc(r);
+    var amt = '￥' + Number(c.total).toLocaleString('ja-JP') + '－';
+    var size = amt.length <= 10 ? 60 : amt.length <= 12 ? 50 : 42;
+    var memo = r.memo ? (/として$/.test(r.memo) ? esc(r.memo) : esc(r.memo) + 'として') : '';
+    var rows = '';
+    if (c.a10 > 0) rows += '<div class="rc-brk"><span>10%対象</span><span>￥' + c.a10.toLocaleString('ja-JP') + '</span></div><div class="rc-brk-tax">（内消費税 ￥' + c.t10.toLocaleString('ja-JP') + '）</div>';
+    if (c.a8 > 0) rows += '<div class="rc-brk"><span>8%対象（軽減税率）</span><span>￥' + c.a8.toLocaleString('ja-JP') + '</span></div><div class="rc-brk-tax">（内消費税 ￥' + c.t8.toLocaleString('ja-JP') + '）</div>';
+    var pay = r.pay === 'card' ? 'クレジットカード利用' : r.pay === 'emoney' ? '電子マネー・QR決済' : '';
+    var iss = r.issuer;
+    var issHtml = iss
+      ? '<div class="rc-iss"><div class="rc-iss-n">' + (esc(iss.name) || '（名称未設定）') + '</div>' +
+        (iss.address ? '<div>' + esc(iss.address).replace(/\n/g, '<br>') + '</div>' : '') +
+        (iss.tel ? '<div>TEL ' + esc(iss.tel) + '</div>' : '') +
+        (iss.regNo ? '<div>登録番号 ' + esc(iss.regNo) + '</div>' : '') + '</div>'
+      : '<div class="rc-iss"><div class="rc-none">発行元が未登録です</div></div>';
+    return '<div class="rc">' +
+      '<div class="rc-title">領収証</div>' +
+      (r.reissue ? '<div class="rc-re">（再発行）</div>' : '') +
+      '<div class="rc-meta"><span>No. ' + esc(r.no) + '</span><span>' + esc(dateJa(r.date)) + '</span></div>' +
+      '<div class="rc-to"><span class="rc-to-name">' + (esc(r.to) || '&nbsp;') + '</span><span class="rc-to-hon">' + esc(r.hon) + '</span></div>' +
+      '<div class="rc-amt"><span class="rc-amt-l">金額</span><span class="rc-amt-v" style="font-size:' + size + 'px">' + amt + '</span></div>' +
+      '<div class="rc-incl">（税込）</div>' +
+      '<div class="rc-memo">但し　' + memo + '</div>' +
+      '<div class="rc-recv">上記正に領収いたしました</div>' +
+      (rows ? '<div class="rc-break">' + rows + '</div>' : '') +
+      (pay ? '<div class="rc-pay">' + pay + '</div>' : '') +
+      '<div class="rc-foot">' + (r.stamp ? '<div class="rc-stamp">収入<br>印紙</div>' : '') + issHtml + '</div>' +
+      '</div>';
+  }
+  function receiptCss() {
+    var out = '', sheets = document.styleSheets;
+    for (var i = 0; i < sheets.length; i++) {
+      var rules;
+      try { rules = sheets[i].cssRules; } catch (e) { continue; }
+      if (!rules) continue;
+      for (var j = 0; j < rules.length; j++) {
+        var sel = rules[j].selectorText;
+        if (sel && /^\.rc\b|^\.rc-|^\.rc,/.test(sel)) out += rules[j].cssText;
+      }
+    }
+    return out;
+  }
+  function backUrl() {
+    if (state.settings.backUrl) return state.settings.backUrl;
+    if (TOP) return location.href.split(/[?#]/)[0];
+    try {
+      var ao = location.ancestorOrigins;
+      if (ao && ao.length) return ao[ao.length - 1] + '/';
+    } catch (e) {}
+    return document.referrer || location.href;
+  }
+  function passprntUri(r) {
+    var html = '<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8">' +
+      '<meta name="viewport" content="width=576"><meta name="format-detection" content="telephone=no">' +
+      '<style>html,body{margin:0;padding:0;background:#fff}' + receiptCss() + '</style></head><body>' +
+      receiptInner(r) + '</body></html>';
+    return 'starpassprnt://v1/print/nopreview?back=' + encodeURIComponent(backUrl()) +
+      '&size=576&popup=enable&html=' + encodeURIComponent(html);
+  }
+  function openUri(uri) {
+    try {
+      var a = document.createElement('a');
+      a.href = uri; a.target = '_top'; a.rel = 'noopener'; a.style.display = 'none';
+      document.body.appendChild(a); a.click(); a.remove();
+    } catch (e) {}
+  }
+
+  /* ---------- 保存 ---------- */
+  var store = { settingsRef: null, receiptsCol: null, writing: false, queued: false, timer: 0 };
+
+  function normSettings(s) {
+    s = s && typeof s === 'object' ? s : {};
+    var list = Array.isArray(s.issuers) ? s.issuers : [];
+    var issuers = list.filter(function (i) { return i && typeof i === 'object'; }).map(function (i) {
+      return {
+        id: String(i.id || newId()), name: String(i.name || ''), address: String(i.address || ''),
+        tel: String(i.tel || ''), regNo: String(i.regNo || ''), seq: Math.max(1, parseInt(i.seq, 10) || 1)
+      };
+    });
+    var activeId = issuers.some(function (i) { return i.id === s.activeId; }) ? s.activeId : (issuers[0] ? issuers[0].id : null);
+    return { issuers: issuers, activeId: activeId, backUrl: String(s.backUrl || '') };
+  }
+  function readLocal() {
+    try { var raw = localStorage.getItem(LS_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+  }
+  function writeLocal() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ settings: state.settings, receipts: state.receipts.slice(0, 200) })); } catch (e) {}
+  }
+  function onSaveError(e) {
+    toast(e && e.code === 'quota_exceeded'
+      ? '保存できる件数の上限です。履歴から古いものを削除してください'
+      : '保存できませんでした。通信状態を確認してください');
+  }
+  function saveSettings() {
+    dirty = true;
+    writeLocal();
+    if (!store.settingsRef) return;
+    if (store.writing) { store.queued = true; return; }
+    store.writing = true;
+    store.settingsRef.set(clone(state.settings)).catch(onSaveError).then(function () {
+      store.writing = false;
+      if (store.queued) { store.queued = false; saveSettings(); }
+    });
+  }
+  function saveSettingsSoon() {
+    dirty = true;
+    clearTimeout(store.timer);
+    store.timer = setTimeout(saveSettings, 600);
+  }
+  function receiptBody(r) { var b = clone(r); delete b.id; delete b.reissue; return b; }
+  function saveReceipt(r) {
+    writeLocal();
+    if (store.receiptsCol) store.receiptsCol.doc(r.id).set(receiptBody(r)).catch(onSaveError);
+  }
+  function removeReceipt(id) {
+    state.receipts = state.receipts.filter(function (r) { return r.id !== id; });
+    writeLocal();
+    if (store.receiptsCol) store.receiptsCol.doc(id).delete().catch(onSaveError);
+  }
+  async function connectAccount() {
+    try {
+      if (!window.claude || typeof window.claude.use !== 'function') return;
+      var got = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+      var db = got[0], user = got[1];
+      if (!db || !user) return;
+      var uid = await user.id();
+      if (!uid) return;
+      var sref = db.doc('data/users/' + uid + '/settings');
+      var rcol = sref.collection('receipts');
+      var snap = await sref.get();
+      if (snap.exists && !dirty) state.settings = normSettings(clone(snap.data()));
+      store.settingsRef = sref;
+      store.receiptsCol = rcol;
+      if ((!snap.exists && state.settings.issuers.length) || dirty) saveSettings();
+
+      var rs = await rcol.orderBy('issuedAt', 'desc').limit(200).get();
+      var remote = rs.docs.map(function (d) { var b = clone(d.data()); b.id = d.id; return b; });
+      var ids = {};
+      remote.forEach(function (r) { ids[r.id] = true; });
+      var localOnly = state.receipts.filter(function (r) { return !ids[r.id] && (rs.empty || r.issuedAt >= bootAt); });
+      for (var i = 0; i < localOnly.length; i++) {
+        try { await rcol.doc(localOnly[i].id).set(receiptBody(localOnly[i])); } catch (e) { onSaveError(e); break; }
+      }
+      state.receipts = remote.concat(localOnly).sort(function (a, b) { return (b.issuedAt || 0) - (a.issuedAt || 0); });
+      writeLocal();
+      renderAll();
+    } catch (e) { /* この端末への保存だけで動かす */ }
+  }
+
+  /* ---------- 画面 ---------- */
+  var toastTimer = 0;
+  function toast(msg) {
+    var t = $('#toast');
+    t.textContent = msg; t.classList.add('on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('on'); }, 3200);
+  }
+  function openDlg(d) { if (typeof d.showModal === 'function') { if (!d.open) d.showModal(); } else d.setAttribute('open', ''); }
+  function closeDlg(d) { if (typeof d.close === 'function') d.close(); else d.removeAttribute('open'); }
+
+  function fitPaper() {
+    var paper = $('#paper'), inner = $('#paperInner'), w = paper.clientWidth;
+    if (!w) return;
+    var k = w / 576;
+    inner.style.transform = 'scale(' + k.toFixed(4) + ')';
+    paper.style.height = Math.ceil(inner.offsetHeight * k) + 'px';
+  }
+  function renderIssuers() {
+    var box = $('#issuerChips');
+    box.textContent = '';
+    var list = state.settings.issuers, act = activeIssuer();
+    list.forEach(function (i) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip';
+      b.textContent = i.name || '名称未設定';
+      b.setAttribute('aria-pressed', String(!!act && act.id === i.id));
+      b.addEventListener('click', function () {
+        state.settings.activeId = i.id;
+        saveSettingsSoon(); renderIssuers(); renderPreview();
+      });
+      box.appendChild(b);
+    });
+    if (!list.length) {
+      var a = document.createElement('button');
+      a.type = 'button'; a.className = 'chip add';
+      a.textContent = '発行元を登録する';
+      a.addEventListener('click', function () { addIssuer(); openSettings(); });
+      box.appendChild(a);
+    }
+  }
+  function renderPreview() {
+    var f = state.form, c = calc(f);
+    $('#paperInner').innerHTML = receiptInner(currentRecord());
+    $('#sumView').textContent = yen(c.total);
+    $('#amountHint').textContent = c.total ? 'うち消費税 ' + yen(c.t10 + c.t8) + '（端数切り捨て）' : '';
+    var needStamp = c.net >= 50000 && f.pay !== 'card';
+    $('#stampRow').hidden = !needStamp;
+    if (needStamp) {
+      $('#stampText').textContent = f.stampOff ? '収入印紙の欄は印刷しません。' : '税抜5万円以上のため、収入印紙の欄を印刷します。';
+      $('#stampToggle').textContent = f.stampOff ? '欄を印刷する' : '欄を印刷しない';
+    }
+    fitPaper();
+  }
+  function syncSeg(seg) {
+    var v = state.form[seg.dataset.key];
+    $$('button', seg).forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.v === v)); });
+  }
+  function syncForm() {
+    var f = state.form;
+    $('#to').value = f.to;
+    $('#total').value = f.total ? f.total.toLocaleString('ja-JP') : '';
+    $('#amt8').value = f.amt8 ? f.amt8.toLocaleString('ja-JP') : '';
+    $('#memo').value = f.memo;
+    $('#date').value = f.date;
+    $('#mixRow').hidden = f.taxMode !== 'mix';
+    $$('.seg[data-key]').forEach(syncSeg);
+  }
+  function renderAll() {
+    renderIssuers(); syncForm(); renderPreview();
+    if ($('#dlgSettings').open) renderSettings();
+    if ($('#dlgHistory').open) renderHistory();
+  }
+
+  /* ---------- 設定 ---------- */
+  function addIssuer() {
+    var i = { id: newId(), name: '', address: '', tel: '', regNo: '', seq: 1 };
+    state.settings.issuers.push(i);
+    if (!state.settings.activeId) state.settings.activeId = i.id;
+    saveSettingsSoon(); renderIssuers(); renderPreview();
+    return i;
+  }
+  function renderSettings() {
+    var list = $('#issuerList');
+    list.textContent = '';
+    state.settings.issuers.forEach(function (i) {
+      var el = document.createElement('div');
+      el.className = 'issuer-card';
+      el.innerHTML =
+        '<div class="field"><label>名称（店名・屋号）<input type="text" data-f="name" autocomplete="off"></label></div>' +
+        '<div class="field"><label>住所<textarea data-f="address" rows="2" autocomplete="off"></textarea></label></div>' +
+        '<div class="field"><label>電話番号<input type="tel" data-f="tel" autocomplete="off"></label></div>' +
+        '<div class="field"><label>インボイス登録番号<input type="text" data-f="regNo" autocomplete="off" placeholder="T1234567890123"></label><p class="warn" data-w hidden>T＋数字13桁で入力してください</p></div>' +
+        '<div class="field"><label>次に発行する番号<input type="text" inputmode="numeric" data-f="seq" autocomplete="off"></label></div>' +
+        '<div class="card-foot"><span class="hint" style="margin:0"></span><button type="button" class="link danger" data-del>この発行元を削除</button></div>';
+      $$('[data-f]', el).forEach(function (inp) {
+        var k = inp.dataset.f;
+        inp.value = i[k];
+        inp.addEventListener('input', function () {
+          if (k === 'seq') i.seq = Math.max(1, parseInt(digits(inp.value), 10) || 1);
+          else i[k] = inp.value;
+          if (k === 'regNo') checkReg();
+          saveSettingsSoon(); renderIssuers(); renderPreview();
+        });
+      });
+      function checkReg() {
+        var v = i.regNo.trim();
+        $('[data-w]', el).hidden = !v || /^T\d{13}$/.test(v);
+      }
+      checkReg();
+      var del = $('[data-del]', el), armed = false;
+      del.addEventListener('click', function () {
+        if (!armed) { armed = true; del.textContent = 'もう一度押すと削除します'; return; }
+        state.settings.issuers = state.settings.issuers.filter(function (x) { return x.id !== i.id; });
+        if (state.settings.activeId === i.id) state.settings.activeId = state.settings.issuers[0] ? state.settings.issuers[0].id : null;
+        saveSettings(); renderIssuers(); renderPreview(); renderSettings();
+      });
+      list.appendChild(el);
+    });
+    if (!state.settings.issuers.length) {
+      var p = document.createElement('p');
+      p.textContent = 'まだ発行元がありません。「発行元を追加」から登録してください。';
+      list.appendChild(p);
+    }
+    $('#backUrl').value = state.settings.backUrl;
+    $('#storeMode').textContent = store.settingsRef
+      ? '発行元と履歴は、あなたの Claude アカウントに保存されています。'
+      : '発行元と履歴は、この端末のブラウザに保存されています。';
+  }
+  function openSettings() {
+    renderSettings();
+    openDlg($('#dlgSettings'));
+    var empty = $$('#issuerList [data-f="name"]').filter(function (x) { return !x.value; })[0];
+    if (empty) empty.focus();
+  }
+
+  /* ---------- 履歴 ---------- */
+  function renderHistory() {
+    var ul = $('#histList');
+    ul.textContent = '';
+    if (!state.receipts.length) {
+      var li = document.createElement('li');
+      li.className = 'empty'; li.style.display = 'block';
+      li.textContent = 'まだ履歴がありません。印刷した領収証がここに並びます。';
+      ul.appendChild(li);
+      return;
+    }
+    state.receipts.forEach(function (r) {
+      var li = document.createElement('li');
+      var who = (r.to || '宛名なし') + (r.to && r.hon ? ' ' + r.hon : '');
+      li.innerHTML =
+        '<div class="h-main"></div><div class="h-amt"></div>' +
+        '<div class="h-sub"></div>' +
+        '<div class="h-act"><button type="button" class="link" data-re>再印刷</button><button type="button" class="link danger" data-del>削除</button></div>';
+      $('.h-main', li).textContent = who;
+      $('.h-amt', li).textContent = yen(r.total);
+      $('.h-sub', li).textContent = dateJa(r.date) + '　No. ' + r.no + '　' + ((r.issuer && r.issuer.name) || '');
+      $('[data-re]', li).addEventListener('click', function () {
+        var again = clone(r); again.reissue = true;
+        closeDlg($('#dlgHistory'));
+        send(again);
+      });
+      var del = $('[data-del]', li), armed = false;
+      del.addEventListener('click', function () {
+        if (!armed) { armed = true; del.textContent = 'もう一度で削除'; return; }
+        removeReceipt(r.id); renderHistory();
+      });
+      ul.appendChild(li);
+    });
+  }
+
+  /* ---------- 印刷 ---------- */
+  function send(r) {
+    lastUri = passprntUri(r);
+    var label = 'No. ' + r.no + (r.reissue ? '（再発行）' : '');
+    $('#ttlSent').textContent = label + ' を印刷に送ります';
+    $('#openLink').href = lastUri;
+    $('#linkBox').hidden = true;
+    $('#copyHint').textContent = '';
+    $('#sentWait').hidden = false;
+    $('#sentBlocked').hidden = true;
+    $('#sentTop').hidden = !TOP;
+    $('#btnAgain').hidden = !TOP;
+    $('#btnCopy').hidden = TOP;
+    $('#openLink').hidden = TOP;
+    $('#copyHint').hidden = TOP;
+    openDlg($('#dlgSent'));
+    if (TOP) {
+      $('#sentWait').hidden = true;
+      $('#ttlSent').textContent = label + ' を印刷に送りました';
+      openUri(lastUri);
+      return;
+    }
+    var left = false;
+    function onLeave() { if (document.hidden) left = true; }
+    document.addEventListener('visibilitychange', onLeave);
+    clearTimeout(sendTimer);
+    sendTimer = setTimeout(function () {
+      document.removeEventListener('visibilitychange', onLeave);
+      $('#sentWait').hidden = true;
+      if (left) { $('#ttlSent').textContent = label + ' を印刷に送りました'; return; }
+      $('#ttlSent').textContent = label + '：この画面からは PassPRNT を開けませんでした';
+      $('#sentBlocked').hidden = false;
+    }, 1800);
+    openUri(lastUri);
+  }
+  function issue() {
+    var iss = activeIssuer();
+    if (!iss) { toast('先に発行元を登録してください'); addIssuer(); openSettings(); return; }
+    if (!state.form.total) {
+      var box = $('#totalBox');
+      box.classList.add('bad');
+      setTimeout(function () { box.classList.remove('bad'); }, 1600);
+      toast('金額を入力してください');
+      $('#total').focus();
+      return;
+    }
+    var r = currentRecord();
+    r.id = newId(); r.issuedAt = Date.now();
+    iss.seq = (iss.seq || 1) + 1;
+    state.receipts.unshift(r);
+    saveSettings(); saveReceipt(r);
+    var paper = $('#paper');
+    paper.classList.remove('feed'); void paper.offsetWidth; paper.classList.add('feed');
+    send(r);
+  }
+  function nextReceipt() {
+    var f = state.form;
+    f.to = ''; f.total = 0; f.amt8 = 0; f.stampOff = false; f.date = today();
+    closeDlg($('#dlgSent'));
+    syncForm(); renderPreview();
+    $('#to').focus();
+  }
+  async function copyLink() {
+    var ok = false;
+    try { await navigator.clipboard.writeText(lastUri); ok = true; } catch (e) {}
+    var box = $('#linkBox');
+    if (!ok) {
+      box.hidden = false; box.value = lastUri;
+      try { box.focus(); box.select(); ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    }
+    $('#copyHint').textContent = ok
+      ? 'コピーしました。Safari の新しいタブのアドレス欄に貼り付けて開いてください。'
+      : '上のリンクを全選択してコピーし、Safari のアドレス欄に貼り付けて開いてください。';
+  }
+
+  var PRINT_ERRORS = {
+    '3': '印刷する内容が長すぎます。',
+    '4': 'プリンターにつながりませんでした。電源と Bluetooth の接続を確認してください。',
+    '5': 'プリンターが印刷できる状態ではありません。用紙とカバーを確認してください。',
+    '6': 'データの送信中に時間切れになりました。プリンターとの距離や電源を確認してください。',
+    '7': '印刷の途中でプリンターが止まりました。用紙とカバーを確認してください。',
+    '8': 'プリンターとの通信でエラーが起きました。電源と Bluetooth の接続を確認してください。',
+    '10': '印刷がキャンセルされました。'
+  };
+  function readPrintResult() {
+    var q;
+    try { q = new URLSearchParams(location.search); } catch (e) { return; }
+    var code = q.get('passprnt_code');
+    if (code === null) return;
+    var msg = q.get('passprnt_message') || '';
+    try { history.replaceState(null, '', location.pathname); } catch (e) {}
+    if (code === '0') { toast('印刷しました'); return; }
+    var last = state.receipts[0];
+    $('#resultMsg').textContent = (PRINT_ERRORS[code] || 'PassPRNT からエラーが返りました。') +
+      '（コード ' + code + (msg ? ' ' + msg : '') + '）';
+    $('#btnRetry').hidden = !last;
+    if (last) $('#btnRetry').textContent = 'No. ' + last.no + ' をもう一度印刷する';
+    openDlg($('#dlgResult'));
+  }
+
+  /* ---------- イベント ---------- */
+  function bind() {
+    $('#to').addEventListener('input', function (e) { state.form.to = e.target.value; renderPreview(); });
+    $('#memo').addEventListener('input', function (e) { state.form.memo = e.target.value; renderPreview(); });
+    $('#date').addEventListener('input', function (e) { state.form.date = e.target.value || today(); renderPreview(); });
+    ['total', 'amt8'].forEach(function (id) {
+      $('#' + id).addEventListener('input', function (e) {
+        var d = digits(e.target.value), n = d ? Number(d) : 0;
+        state.form[id] = n;
+        e.target.value = n ? n.toLocaleString('ja-JP') : '';
+        renderPreview();
+      });
+    });
+    $$('.seg[data-key]').forEach(function (seg) {
+      seg.addEventListener('click', function (e) {
+        var b = e.target.closest('button[data-v]');
+        if (!b) return;
+        state.form[seg.dataset.key] = b.dataset.v;
+        syncSeg(seg);
+        $('#mixRow').hidden = state.form.taxMode !== 'mix';
+        renderPreview();
+      });
+    });
+    $('#memoChips').addEventListener('click', function (e) {
+      var b = e.target.closest('button');
+      if (!b) return;
+      state.form.memo = b.textContent; $('#memo').value = b.textContent; renderPreview();
+    });
+    $('#stampToggle').addEventListener('click', function () { state.form.stampOff = !state.form.stampOff; renderPreview(); });
+    $('#btnPrint').addEventListener('click', issue);
+    $('#btnNext').addEventListener('click', nextReceipt);
+    $('#btnCopy').addEventListener('click', copyLink);
+    $('#btnAgain').addEventListener('click', function () { if (lastUri) openUri(lastUri); });
+    $('#btnRetry').addEventListener('click', function () {
+      closeDlg($('#dlgResult'));
+      if (state.receipts[0]) send(clone(state.receipts[0]));
+    });
+    $('#btnSettings').addEventListener('click', openSettings);
+    $('#btnHistory').addEventListener('click', function () { renderHistory(); openDlg($('#dlgHistory')); });
+    $('#btnAddIssuer').addEventListener('click', function () {
+      addIssuer(); renderSettings();
+      var names = $$('#issuerList [data-f="name"]');
+      if (names.length) names[names.length - 1].focus();
+    });
+    $('#backUrl').addEventListener('input', function (e) { state.settings.backUrl = e.target.value.trim(); saveSettingsSoon(); });
+    $$('[data-close]').forEach(function (b) {
+      b.addEventListener('click', function () { closeDlg(b.closest('dialog')); });
+    });
+    if (typeof ResizeObserver === 'function') new ResizeObserver(fitPaper).observe($('#paper'));
+    window.addEventListener('resize', fitPaper);
+  }
+
+  /* ---------- 起動 ---------- */
+  var local = readLocal();
+  if (local) {
+    state.settings = normSettings(local.settings);
+    state.receipts = Array.isArray(local.receipts) ? local.receipts : [];
+  }
+  bind();
+  renderAll();
+  readPrintResult();
+  connectAccount();
+})();
+</script>
+</body>
+</html>
