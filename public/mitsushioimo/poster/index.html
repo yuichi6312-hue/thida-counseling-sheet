@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>日本橋 蜜塩芋 ポスター（A2）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Zen+Old+Mincho:wght@400;700;900&display=block" rel="stylesheet">
+<link rel="stylesheet" href="./poster.css">
+</head>
+<body>
+<div class="stage">
+<main class="poster" aria-label="日本橋 蜜塩芋 ポスター">
+
+  <div class="frame frame-outer" aria-hidden="true"></div>
+  <div class="frame frame-inner" aria-hidden="true"></div>
+
+  <!-- 右上：店名とブランド -->
+  <header class="brand">
+    <p class="brand-place">日本橋</p>
+    <h1 class="brand-name">蜜塩芋</h1>
+  </header>
+
+  <!-- 何の商品か（3秒で伝える層） -->
+  <p class="what">
+    <span class="what-salt">宮古島の雪塩で食べる</span>
+    <span class="what-item">冷やし焼き芋</span>
+  </p>
+
+  <!-- 左上：味のコピー -->
+  <p class="taste">
+    <span class="taste-sun">甘いは太陽、</span>
+    <span class="taste-sea">しょっぱいは海。</span>
+  </p>
+
+  <!-- 塩の粒 -->
+  <img class="salt" src="./salt.svg" alt="" aria-hidden="true">
+
+  <!-- 写真（photo.jpg を差し替えるだけで更新できる） -->
+  <figure class="photo">
+    <img src="./photo.jpg" alt="冷やし焼き芋に雪塩をかけたところ">
+  </figure>
+
+  <!-- 1597 の刻印 -->
+  <div class="seal" aria-label="1597年 宮古島に芋が渡った年">
+    <span class="seal-year">1597</span>
+    <span class="seal-text">宮古島に<br>芋が渡った年</span>
+  </div>
+
+  <!-- 物語（30秒の層） -->
+  <section class="story">
+    <p class="story-origin">日本最古のさつまいも伝来地、宮古島</p>
+    <p class="story-main">島を救った芋に、その島の塩を。</p>
+    <p class="story-body">
+      1597年、嵐に二度流されながらも<br>
+      一本の芋かずらを抱えて、宮古島へ帰った人がいました。<br>
+      その芋は、飢えに苦しむ島を救いました。
+    </p>
+    <p class="story-craft">
+      整体師の手で芋の繊維を揉みほぐし、じっくり焼いて冷やす“揉み焼き”。<br>
+      仕上げに、琉球石灰岩が濾した地下海水から生まれる雪塩をひとふり。
+    </p>
+  </section>
+
+  <!-- 最下部：原材料・商標・QR -->
+  <footer class="foot">
+    <dl class="ingredients">
+      <div><dt>さつまいも</dt><dd data-field="imo">茨城県産ブランド芋</dd></div>
+      <div><dt>塩</dt><dd>沖縄県宮古島産 雪塩</dd></div>
+    </dl>
+    <p class="note">「雪塩」は株式会社宮古島の雪塩の商標です。</p>
+    <div class="qr">
+      <div class="qr-box" aria-label="QRコード差し込み枠"></div>
+      <span>宮古島へ</span>
+    </div>
+  </footer>
+
+</main>
+</div>
+<script>
+  // 画面表示のときだけ、ウィンドウに合わせて縮小する（印刷時は実寸）
+  (function () {
+    var stage = document.querySelector('.stage');
+    var poster = document.querySelector('.poster');
+    function fit() {
+      var mm = poster.offsetWidth / 420;
+      var s = Math.min(window.innerWidth / poster.offsetWidth, window.innerHeight / poster.offsetHeight) * 0.96;
+      if (window.matchMedia('print').matches || location.search.indexOf('raw') !== -1) s = 1;
+      poster.style.transform = 'scale(' + s + ')';
+      stage.style.height = (poster.offsetHeight * s) + 'px';
+      stage.style.width = (poster.offsetWidth * s) + 'px';
+    }
+    window.addEventListener('resize', fit);
+    window.addEventListener('beforeprint', fit);
+    document.fonts.ready.then(fit);
+    fit();
+  })();
+</script>
+</body>
+</html>
