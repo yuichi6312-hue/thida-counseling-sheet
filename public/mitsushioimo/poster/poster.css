@@ -1,12 +1,10 @@
-/* 日本橋 蜜塩芋 ポスター（A2 縦 420×594mm） */
+/* 日本橋 蜜塩芋 ポスター 第2版（A2 縦 420×594mm） */
 :root {
   --ink: #0b0b0b;
   --paper: #f4f1ea;
-  --muted: #b9b2a6;
+  --muted: #bdb6aa;
   --gold: #d2aa52;
-  --gold-soft: #b8924a;
   --miyako: #2a9cc0;
-  --brush: "Yuji Syuku", "Zen Old Mincho", serif;
   --mincho: "Zen Old Mincho", "IPAMincho", serif;
 }
 
@@ -31,10 +29,11 @@ body { display: flex; justify-content: center; align-items: flex-start; min-heig
   height: 594mm;
   transform-origin: 0 0;
   background:
-    radial-gradient(ellipse 70% 38% at 50% 56%, rgba(120, 70, 20, 0.22), transparent 70%),
+    radial-gradient(ellipse 62% 30% at 50% 58%, rgba(130, 78, 22, 0.24), transparent 72%),
     var(--ink);
   color: var(--paper);
   font-family: var(--mincho);
+  font-weight: 500;
   overflow: hidden;
 }
 
@@ -44,188 +43,152 @@ body { display: flex; justify-content: center; align-items: flex-start; min-heig
   .poster { transform: none !important; }
 }
 
-/* 枠 */
+/* 額縁（元ポスターの太い白枠） */
 .frame { position: absolute; pointer-events: none; }
-.frame-outer { inset: 10mm; border: 0.7mm solid var(--paper); }
-.frame-inner { inset: 13mm; border: 0.3mm solid var(--paper); }
+.frame-outer { inset: 9mm; border: 1.6mm solid var(--paper); }
+.frame-inner { inset: 13.5mm; border: 0.5mm solid var(--paper); }
 
-/* 縦書き共通 */
-.v { writing-mode: vertical-rl; text-orientation: mixed; }
+/* ロゴ */
+.logo { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+.logo img { position: absolute; display: block; }
+.logo-place { left: 335.5mm; top: 36mm; height: 40mm; }
+.logo-name { left: 296mm; top: 84mm; height: 246mm; filter: drop-shadow(0 0 5mm rgba(0, 0, 0, 0.7)); }
 
-/* 右上：日本橋 蜜塩芋（同じ列に縦に積む） */
-.brand {
+/* 何の商品か */
+.define {
   position: absolute;
-  top: 28mm;
-  right: 26mm;
-  width: 84mm;
+  top: 84mm;
+  right: 136mm;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  gap: 7mm;
   z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
-.brand-place {
-  writing-mode: vertical-rl;
-  font-size: 12mm;
-  letter-spacing: 0.4em;
-  font-weight: 700;
-}
-.brand-name {
-  writing-mode: vertical-rl;
-  font-family: var(--brush);
-  font-weight: 400;
-  font-size: 74mm;
-  line-height: 1;
-  margin-top: 2mm;
-  text-shadow: 0 0 6mm rgba(0, 0, 0, 0.6);
-}
+.define span { writing-mode: vertical-rl; line-height: 1; font-weight: 700; }
+.define-salt { color: var(--gold); font-size: 13mm; letter-spacing: 0.18em; }
+.define-item { color: var(--paper); font-size: 25mm; letter-spacing: 0.1em; font-weight: 900; }
 
-/* 何の商品か：蜜塩芋の左に2行 */
-.what {
-  position: absolute;
-  top: 40mm;
-  right: 116mm;
-  display: flex;
-  flex-direction: row-reverse;
-  gap: 5mm;
-  margin: 0;
-}
-.what span {
-  writing-mode: vertical-rl;
-  font-weight: 700;
-  line-height: 1;
-}
-.what-salt { color: var(--gold); font-size: 13mm; letter-spacing: 0.16em; }
-.what-item { color: var(--paper); font-size: 16mm; letter-spacing: 0.14em; margin-top: 30mm; }
-
-/* 左上：味のコピー（右の列が「甘い」、左の列が「しょっぱい」） */
-.taste {
-  position: absolute;
-  top: 36mm;
-  left: 32mm;
-  display: flex;
-  flex-direction: row-reverse;
-  gap: 8mm;
-}
-.taste span {
-  writing-mode: vertical-rl;
-  font-size: 16mm;
-  letter-spacing: 0.12em;
-  line-height: 1;
-}
-.taste-sea {
-  margin-top: 30mm;
-  padding-left: 4mm;
-  border-left: 0.8mm solid var(--miyako);
-}
-
-/* 塩の粒（写真へ降りそそぐ） */
+/* 塩の粒 */
 .salt {
   position: absolute;
-  top: 24mm;
-  left: 162mm;
-  width: 80mm;
-  height: 240mm;
-  opacity: 0.95;
+  left: 172mm;
+  top: 100mm;
+  width: 60mm;
+  height: 190mm;
+  z-index: 1;
 }
 
 /* 写真 */
 .photo {
   position: absolute;
+  left: 13.5mm;
+  right: 13.5mm;
   top: 262mm;
-  left: 13mm;
-  right: 13mm;
-  height: 132mm;
+  height: 160mm;
 }
 .photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 45%;
+  object-position: 50% 40%;
   display: block;
   -webkit-mask-image:
-    linear-gradient(to bottom, transparent 0%, #000 16%, #000 80%, transparent 100%),
-    linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
+    linear-gradient(to bottom, transparent 0%, #000 18%, #000 78%, transparent 100%),
+    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
   -webkit-mask-composite: source-in;
   mask-image:
-    linear-gradient(to bottom, transparent 0%, #000 16%, #000 80%, transparent 100%),
-    linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
+    linear-gradient(to bottom, transparent 0%, #000 18%, #000 78%, transparent 100%),
+    linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
   mask-composite: intersect;
 }
 
-/* 1597 の刻印 */
+/* 1597 の角印 */
 .seal {
   position: absolute;
-  top: 356mm;
-  left: 30mm;
-  width: 40mm;
-  height: 40mm;
-  border-radius: 50%;
-  border: 0.6mm solid var(--gold);
-  outline: 0.3mm solid var(--gold-soft);
-  outline-offset: 1.2mm;
-  background: rgba(11, 11, 11, 0.82);
+  left: 34mm;
+  top: 200mm;
+  width: 46mm;
+  height: 46mm;
+  border: 0.8mm solid var(--gold);
+  outline: 0.35mm solid var(--gold);
+  outline-offset: 1.4mm;
+  background: rgba(11, 11, 11, 0.85);
   color: var(--gold);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
+  z-index: 2;
 }
-.seal-year { font-size: 12mm; font-weight: 700; letter-spacing: 0.04em; line-height: 1; }
-.seal-text { font-size: 3.8mm; line-height: 1.35; margin-top: 1.6mm; letter-spacing: 0.08em; }
+.seal-year { font-size: 16mm; font-weight: 700; line-height: 1; letter-spacing: 0.02em; }
+.seal-text { font-size: 5mm; line-height: 1.3; margin-top: 2mm; letter-spacing: 0.06em; font-weight: 700; }
 
-/* 物語 */
+/* 30秒の層 */
 .story {
   position: absolute;
-  top: 404mm;
-  left: 20mm;
-  right: 20mm;
+  top: 428mm;
+  left: 22mm;
+  right: 22mm;
   text-align: center;
 }
-.story-origin {
-  display: inline-block;
-  color: var(--gold);
-  font-size: 9.5mm;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  padding: 0 6mm 2.4mm;
-  border-bottom: 0.4mm solid var(--miyako);
-}
-.story-main {
-  font-family: var(--brush);
-  font-size: 23mm;
-  line-height: 1.25;
-  margin-top: 7mm;
-  letter-spacing: 0.04em;
-}
+.story-label { color: var(--gold); font-size: 9.5mm; font-weight: 700; letter-spacing: 0.2em; }
+.story-en { color: var(--muted); font-size: 5.2mm; letter-spacing: 0.04em; margin-top: 2.5mm; }
+.story-main { font-size: 21mm; font-weight: 900; letter-spacing: 0.05em; line-height: 1.2; margin-top: 7mm; }
 .story-body {
-  font-size: 8.4mm;
-  line-height: 1.85;
-  margin-top: 7mm;
-  letter-spacing: 0.06em;
-}
-.story-craft {
-  font-size: 6.1mm;
-  line-height: 1.85;
-  margin-top: 5.5mm;
   color: var(--muted);
-  letter-spacing: 0.04em;
+  font-size: 6.8mm;
+  line-height: 1.75;
+  margin: 7mm auto 0;
+  width: 290mm;
+  letter-spacing: 0.03em;
 }
+
+/* QR */
+.qr {
+  position: absolute;
+  right: 26mm;
+  top: 494mm;
+  width: 46mm;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.6mm;
+  text-align: center;
+}
+.qr-box { width: 34mm; height: 34mm; border: 0.6mm solid var(--miyako); outline: 2mm solid rgba(42, 156, 192, 0.15); }
+.qr-cta { font-size: 5mm; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; }
+.qr-tag { font-size: 5mm; color: var(--muted); letter-spacing: 0.08em; }
 
 /* 最下部 */
 .foot {
   position: absolute;
-  left: 24mm;
-  right: 24mm;
+  left: 26mm;
+  right: 26mm;
   bottom: 22mm;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 10mm;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  gap: 8mm;
 }
-.ingredients { font-size: 6mm; line-height: 1.7; letter-spacing: 0.08em; }
-.ingredients div { display: flex; gap: 4mm; }
+.honest { font-size: 5.6mm; font-weight: 700; letter-spacing: 0.06em; margin-bottom: 1.6mm; }
+.ingredients { font-size: 5.6mm; line-height: 1.6; letter-spacing: 0.06em; }
+.ingredients div { display: flex; gap: 3mm; }
 .ingredients dt { color: var(--muted); min-width: 24mm; }
-.note { font-size: 4.2mm; color: var(--muted); letter-spacing: 0.05em; padding-bottom: 1mm; }
-.qr { display: flex; flex-direction: column; align-items: center; gap: 1.5mm; font-size: 4.4mm; letter-spacing: 0.2em; color: var(--muted); }
-.qr-box { width: 26mm; height: 26mm; border: 0.4mm dashed var(--muted); }
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: 3.5mm;
+  color: var(--gold);
+  font-weight: 700;
+  padding: 2.5mm 7mm;
+  border-top: 0.5mm solid var(--gold);
+  border-bottom: 0.5mm solid var(--gold);
+  white-space: nowrap;
+}
+.price-label { font-size: 6.5mm; letter-spacing: 0.1em; }
+.price-item { font-size: 9mm; color: var(--paper); }
+.price-yen { font-size: 13mm; letter-spacing: 0.02em; }
+.price-yen small { font-size: 5mm; margin-left: 1mm; }
+.note { font-size: 5mm; color: var(--muted); text-align: right; letter-spacing: 0.03em; }

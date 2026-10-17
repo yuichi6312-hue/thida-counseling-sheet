@@ -5,6 +5,7 @@
 - `poster.css` … デザイン
 - `photo.jpg` … 焼き芋の写真（**差し替え推奨**）
 - `salt.svg` … 降りそそぐ塩の粒
+- `logo-mitsushioimo.svg` / `logo-nihonbashi.svg` … 元ポスターの筆文字ロゴをベクター化したもの（低解像度の画像から起こしたため、元の筆文字データがあれば差し替え推奨）
 - `poster.pdf` … 入稿用 PDF（A2 1枚）
 - `poster.png` … 確認用の画像
 
@@ -18,6 +19,7 @@ Chrome で `index.html` を開き、印刷 →「PDFに保存」。用紙サイ�
 ## 文言の変え方
 `index.html` を直接編集します。
 - 芋の産地：`data-field="imo"` の行（例：茨城県産ブランド芋）
+- 価格：`data-field="price"` の行（**1,980円は仮。印刷前に必ず確認**）
 - QR コード：`.qr-box` の枠に QR 画像を入れる（例：`<img src="./qr.png" style="width:100%">`）
 
 ## 表現ルール
