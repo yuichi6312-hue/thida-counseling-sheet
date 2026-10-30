@@ -94,6 +94,17 @@ input:focus,textarea:focus{border-color:var(--sea);outline:none;box-shadow:0 0 0
 .hint{margin:6px 0 0;font-size:13px;color:var(--muted);min-height:1.6em}
 .sub{margin-top:12px}
 .sub label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.months-grid{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
+.months-grid > div{flex:0 1 auto}
+.months-grid input[type="month"]{min-width:180px}
+.label-s{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.stepper{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:8px;background:var(--field);overflow:hidden}
+.stepper button{background:transparent;border:0;width:52px;min-height:46px;font-size:22px;font-weight:700}
+.stepper button:disabled{opacity:.3;cursor:default}
+.stepper output{min-width:44px;text-align:center;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.fixed-info{font-size:15px;line-height:1.6;white-space:pre-line}
+.fixed-info strong{display:block;font-size:17px}
+.tag{display:inline-block;font-size:12px;font-weight:700;border:1.5px solid var(--line);border-radius:999px;padding:1px 10px;margin-bottom:8px;color:var(--muted)}
 .pair{display:grid;grid-template-columns:minmax(0,180px) minmax(0,1fr);gap:20px}
 .notice{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-left:4px solid var(--sun);padding:8px 12px;font-size:14px;background:color-mix(in srgb,var(--sun) 14%,transparent);border-radius:0 8px 8px 0}
 .link{background:none;border:0;padding:6px 4px;min-height:36px;color:var(--sea);font-weight:700;text-decoration:underline;text-underline-offset:3px}
@@ -189,7 +200,9 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
 .rc-amt-l{font-size:24px;white-space:nowrap}
 .rc-amt-v{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;font-weight:700;line-height:1.1;white-space:nowrap}
 .rc-incl{text-align:right;font-size:20px;margin-top:4px}
-.rc-memo{margin-top:16px;font-size:26px;word-break:break-all}
+.rc-memo{display:flex;margin-top:16px;font-size:26px}
+.rc-memo-l{flex:none;width:3em}
+.rc-memo-b{flex:1;min-width:0;word-break:break-all}
 .rc-recv{margin-top:6px;font-size:24px}
 .rc-break{margin-top:22px;padding-top:10px;border-top:2px solid #000;font-size:21px}
 .rc-brk{display:flex;justify-content:space-between;gap:12px;white-space:nowrap}
@@ -265,6 +278,28 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
         </div>
       </div>
 
+      <div class="field">
+        <span class="label" id="lblMonthly">〇月分</span>
+        <div class="seg" role="group" aria-labelledby="lblMonthly" data-key="monthly">
+          <button type="button" data-v="off">つけない</button>
+          <button type="button" data-v="on">月分をつける</button>
+        </div>
+        <div class="sub" id="monthRow" hidden>
+          <div class="months-grid">
+            <div><label for="mStart">最初の月</label><input id="mStart" type="month"></div>
+            <div>
+              <span class="label-s" id="lblCount">何か月分（1か月に1枚）</span>
+              <div class="stepper" role="group" aria-labelledby="lblCount">
+                <button type="button" id="mMinus" aria-label="1か月減らす">−</button>
+                <output id="mCount" aria-live="polite">1</output>
+                <button type="button" id="mPlus" aria-label="1か月増やす">＋</button>
+              </div>
+            </div>
+          </div>
+          <p class="hint" id="monthHint"></p>
+        </div>
+      </div>
+
       <div class="field pair">
         <div>
           <label class="label" for="date" style="display:block;font-size:14px;font-weight:700;margin-bottom:6px">日付</label>
@@ -291,7 +326,7 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
         <div class="paper" id="paper"><div id="paperInner"></div></div>
       </div>
       <div class="action">
-        <div class="action-sum"><span>合計（税込）</span><strong id="sumView">¥0</strong></div>
+        <div class="action-sum"><span id="sumLabel">合計（税込）</span><strong id="sumView">¥0</strong></div>
         <button type="button" class="btn-primary" id="btnPrint">印刷する</button>
       </div>
     </aside>
@@ -339,6 +374,7 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
       </ol>
     </div>
     <div class="stack">
+      <button type="button" class="btn-primary" id="btnQueueNext" hidden></button>
       <button type="button" class="btn-primary" id="btnAgain" hidden>もう一度印刷に送る</button>
       <button type="button" class="btn-primary" id="btnCopy">印刷リンクをコピー</button>
       <textarea id="linkBox" readonly hidden aria-label="印刷リンク"></textarea>
@@ -364,6 +400,12 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
   'use strict';
 
   var LS_KEY = 'ryoshusho.v1';
+  var QUEUE_KEY = 'ryoshusho.queue';
+
+  // 固定の発行元。ここに書いたものは毎回必ず表示され、画面からは変更・削除できません。
+  var FIXED_ISSUERS = [
+    /*FIXED_ISSUERS*/
+  ];
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
@@ -393,7 +435,8 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
   var state = {
     settings: { issuers: [], activeId: null, backUrl: '' },
     receipts: [],
-    form: { to: '', hon: '様', total: 0, taxMode: '10', amt8: 0, memo: '', date: today(), pay: 'cash', stampOff: false }
+    form: { to: '', hon: '様', total: 0, taxMode: '10', amt8: 0, memo: '', date: today(), pay: 'cash', stampOff: false,
+            monthly: 'off', mStart: today().slice(0, 7), mCount: 1 }
   };
   var bootAt = Date.now();
   var dirty = false;
@@ -415,12 +458,27 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
     for (var i = 0; i < s.issuers.length; i++) if (s.issuers[i].id === s.activeId) return s.issuers[i];
     return s.issuers[0] || null;
   }
-  function currentRecord() {
-    var f = state.form, i = activeIssuer(), c = calc(f);
+  function monthKey(ym, k) {
+    var m = /^(\d{4})-(\d{2})$/.exec(ym || '') || /^(\d{4})-(\d{2})$/.exec(today().slice(0, 7));
+    var n = (+m[1]) * 12 + (+m[2] - 1) + (k || 0);
+    return Math.floor(n / 12) + '-' + String(n % 12 + 1).padStart(2, '0');
+  }
+  function monthLabel(ym) {
+    var m = /^(\d{4})-(\d{2})$/.exec(ym);
+    return (+m[1]) + '年' + (+m[2]) + '月分';
+  }
+  function sheetCount() { return state.form.monthly === 'on' ? state.form.mCount : 1; }
+  function currentRecord(k) {
+    k = k || 0;
+    var f = state.form, i = activeIssuer(), c = calc(f), memo = f.memo.trim(), period = null;
+    if (f.monthly === 'on') {
+      period = monthKey(f.mStart, k);
+      memo = monthLabel(period) + (memo ? '　' + memo : '');
+    }
     return {
-      no: i ? pad4(i.seq) : '----',
+      no: i ? pad4(i.seq + k) : '----',
       date: f.date, to: f.to.trim(), hon: f.hon, total: c.total, taxMode: f.taxMode, amt8: c.a8,
-      memo: f.memo.trim(), pay: f.pay,
+      memo: memo, period: period, pay: f.pay,
       stamp: c.net >= 50000 && f.pay !== 'card' && !f.stampOff,
       issuerId: i ? i.id : null,
       issuer: i ? { name: i.name, address: i.address, tel: i.tel, regNo: i.regNo } : null
@@ -432,7 +490,13 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
     var c = calc(r);
     var amt = '￥' + Number(c.total).toLocaleString('ja-JP') + '－';
     var size = amt.length <= 10 ? 60 : amt.length <= 12 ? 50 : 42;
-    var memo = r.memo ? (/として$/.test(r.memo) ? esc(r.memo) : esc(r.memo) + 'として') : '';
+    var body = r.memo || '', head = '';
+    if (r.period) {
+      var pl = monthLabel(r.period);
+      if (body.indexOf(pl) === 0) { head = pl; body = body.slice(pl.length).replace(/^[\s　]+/, ''); }
+    }
+    var memo = body ? (/として$/.test(body) ? esc(body) : esc(body) + 'として') : '';
+    if (head) memo = esc(head) + (memo ? '<br>' + memo : '');
     var rows = '';
     if (c.a10 > 0) rows += '<div class="rc-brk"><span>10%対象</span><span>￥' + c.a10.toLocaleString('ja-JP') + '</span></div><div class="rc-brk-tax">（内消費税 ￥' + c.t10.toLocaleString('ja-JP') + '）</div>';
     if (c.a8 > 0) rows += '<div class="rc-brk"><span>8%対象（軽減税率）</span><span>￥' + c.a8.toLocaleString('ja-JP') + '</span></div><div class="rc-brk-tax">（内消費税 ￥' + c.t8.toLocaleString('ja-JP') + '）</div>';
@@ -451,7 +515,7 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
       '<div class="rc-to"><span class="rc-to-name">' + (esc(r.to) || '&nbsp;') + '</span><span class="rc-to-hon">' + esc(r.hon) + '</span></div>' +
       '<div class="rc-amt"><span class="rc-amt-l">金額</span><span class="rc-amt-v" style="font-size:' + size + 'px">' + amt + '</span></div>' +
       '<div class="rc-incl">（税込）</div>' +
-      '<div class="rc-memo">但し　' + memo + '</div>' +
+      '<div class="rc-memo"><span class="rc-memo-l">但し</span><span class="rc-memo-b">' + memo + '</span></div>' +
       '<div class="rc-recv">上記正に領収いたしました</div>' +
       (rows ? '<div class="rc-break">' + rows + '</div>' : '') +
       (pay ? '<div class="rc-pay">' + pay + '</div>' : '') +
@@ -508,6 +572,16 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
         tel: String(i.tel || ''), regNo: String(i.regNo || ''), seq: Math.max(1, parseInt(i.seq, 10) || 1)
       };
     });
+    var fixed = FIXED_ISSUERS.map(function (f) {
+      var saved = issuers.filter(function (i) { return i.id === f.id; })[0];
+      return {
+        id: f.id, name: f.name || '', address: f.address || '', tel: f.tel || '', regNo: f.regNo || '',
+        seq: saved ? saved.seq : 1, fixed: true
+      };
+    });
+    issuers = fixed.concat(issuers.filter(function (i) {
+      return !FIXED_ISSUERS.some(function (f) { return f.id === i.id; });
+    }));
     var activeId = issuers.some(function (i) { return i.id === s.activeId; }) ? s.activeId : (issuers[0] ? issuers[0].id : null);
     return { issuers: issuers, activeId: activeId, backUrl: String(s.backUrl || '') };
   }
@@ -620,9 +694,21 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
     }
   }
   function renderPreview() {
-    var f = state.form, c = calc(f);
-    $('#paperInner').innerHTML = receiptInner(currentRecord());
-    $('#sumView').textContent = yen(c.total);
+    var f = state.form, c = calc(f), n = sheetCount();
+    $('#paperInner').innerHTML = receiptInner(currentRecord(0));
+    $('#sumLabel').textContent = n > 1 ? n + '枚の合計（税込）' : '合計（税込）';
+    $('#sumView').textContent = yen(c.total * n);
+    $('#btnPrint').textContent = n > 1 ? n + '枚印刷する' : '印刷する';
+    $('#mCount').textContent = f.mCount;
+    $('#mMinus').disabled = f.mCount <= 1;
+    $('#mPlus').disabled = f.mCount >= 12;
+    if (f.monthly === 'on') {
+      var i = activeIssuer(), first = monthLabel(monthKey(f.mStart, 0)), last = monthLabel(monthKey(f.mStart, n - 1));
+      $('#monthHint').textContent = n > 1
+        ? first + '〜' + last + 'を1枚ずつ、' + n + '枚続けて印刷します' +
+          (i ? '（No. ' + pad4(i.seq) + '〜' + pad4(i.seq + n - 1) + '）' : '') + '。右は1枚目です。'
+        : first + 'として印刷します。';
+    }
     $('#amountHint').textContent = c.total ? 'うち消費税 ' + yen(c.t10 + c.t8) + '（端数切り捨て）' : '';
     var needStamp = c.net >= 50000 && f.pay !== 'card';
     $('#stampRow').hidden = !needStamp;
@@ -644,6 +730,8 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
     $('#memo').value = f.memo;
     $('#date').value = f.date;
     $('#mixRow').hidden = f.taxMode !== 'mix';
+    $('#mStart').value = f.mStart;
+    $('#monthRow').hidden = f.monthly !== 'on';
     $$('.seg[data-key]').forEach(syncSeg);
   }
   function renderAll() {
@@ -666,6 +754,27 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
     state.settings.issuers.forEach(function (i) {
       var el = document.createElement('div');
       el.className = 'issuer-card';
+      if (i.fixed) {
+        el.innerHTML =
+          '<span class="tag">固定</span>' +
+          '<div class="fixed-info"></div>' +
+          '<div class="field" style="margin-top:12px"><label>次に発行する番号<input type="text" inputmode="numeric" data-f="seq" autocomplete="off"></label></div>' +
+          '<p class="hint" style="margin:0">店名や住所を変えるときはアプリの更新が必要です。</p>';
+        var info = $('.fixed-info', el);
+        var strong = document.createElement('strong');
+        strong.textContent = i.name;
+        info.appendChild(strong);
+        info.appendChild(document.createTextNode(
+          [i.address, i.tel ? 'TEL ' + i.tel : '', i.regNo ? '登録番号 ' + i.regNo : ''].filter(Boolean).join('\n')));
+        var seqIn = $('[data-f="seq"]', el);
+        seqIn.value = i.seq;
+        seqIn.addEventListener('input', function () {
+          i.seq = Math.max(1, parseInt(digits(seqIn.value), 10) || 1);
+          saveSettingsSoon(); renderPreview();
+        });
+        list.appendChild(el);
+        return;
+      }
       el.innerHTML =
         '<div class="field"><label>名称（店名・屋号）<input type="text" data-f="name" autocomplete="off"></label></div>' +
         '<div class="field"><label>住所<textarea data-f="address" rows="2" autocomplete="off"></textarea></label></div>' +
@@ -749,10 +858,52 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
     });
   }
 
+  /* ---------- 連続印刷 ---------- */
+  function readQueue() {
+    try {
+      var q = JSON.parse(localStorage.getItem(QUEUE_KEY) || 'null');
+      return q && Array.isArray(q.ids) && q.ids.length ? q : null;
+    } catch (e) { return null; }
+  }
+  function writeQueue(q) {
+    try { if (q) localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); else localStorage.removeItem(QUEUE_KEY); } catch (e) {}
+  }
+  function findReceipt(id) {
+    for (var i = 0; i < state.receipts.length; i++) if (state.receipts[i].id === id) return state.receipts[i];
+    return null;
+  }
+  function queueNext() {
+    var q = readQueue();
+    if (!q || q.pos + 1 >= q.ids.length) return null;
+    return findReceipt(q.ids[q.pos + 1]);
+  }
+  function progressText(r) {
+    var q = readQueue();
+    if (!q || q.ids.length < 2) return '';
+    var k = q.ids.indexOf(r.id);
+    return k < 0 ? '' : '（' + (k + 1) + '/' + q.ids.length + '枚目）';
+  }
+  function showQueueNext() {
+    var nx = queueNext(), q = readQueue(), b = $('#btnQueueNext');
+    b.hidden = !nx;
+    if (nx) {
+      b.textContent = '次へ：' + (nx.period ? monthLabel(nx.period) : 'No. ' + nx.no) + 'を印刷する（' + (q.pos + 2) + '/' + q.ids.length + '枚目）';
+    }
+    $('#btnAgain').className = nx ? 'btn-quiet' : 'btn-primary';
+    $('#btnNext').textContent = nx ? '残りを印刷せずに閉じる' : '次の領収証へ';
+  }
+  function sendQueued() {
+    var q = readQueue(), nx = queueNext();
+    if (!nx) return;
+    q.pos += 1;
+    writeQueue(q);
+    send(nx);
+  }
+
   /* ---------- 印刷 ---------- */
   function send(r) {
     lastUri = passprntUri(r);
-    var label = 'No. ' + r.no + (r.reissue ? '（再発行）' : '');
+    var label = 'No. ' + r.no + (r.reissue ? '（再発行）' : '') + progressText(r);
     $('#ttlSent').textContent = label + ' を印刷に送ります';
     $('#openLink').href = lastUri;
     $('#linkBox').hidden = true;
@@ -764,6 +915,7 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
     $('#btnCopy').hidden = TOP;
     $('#openLink').hidden = TOP;
     $('#copyHint').hidden = TOP;
+    showQueueNext();
     openDlg($('#dlgSent'));
     if (TOP) {
       $('#sentWait').hidden = true;
@@ -795,18 +947,25 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
       $('#total').focus();
       return;
     }
-    var r = currentRecord();
-    r.id = newId(); r.issuedAt = Date.now();
-    iss.seq = (iss.seq || 1) + 1;
-    state.receipts.unshift(r);
-    saveSettings(); saveReceipt(r);
+    var n = sheetCount(), now = Date.now(), list = [];
+    for (var k = 0; k < n; k++) {
+      var r = currentRecord(k);
+      r.id = newId() + k; r.issuedAt = now + k;
+      list.push(r);
+    }
+    iss.seq = (iss.seq || 1) + n;
+    for (var j = 0; j < list.length; j++) state.receipts.unshift(list[j]);
+    saveSettings();
+    list.forEach(saveReceipt);
+    writeQueue(n > 1 ? { ids: list.map(function (r) { return r.id; }), pos: 0 } : null);
     var paper = $('#paper');
     paper.classList.remove('feed'); void paper.offsetWidth; paper.classList.add('feed');
-    send(r);
+    send(list[0]);
   }
   function nextReceipt() {
     var f = state.form;
     f.to = ''; f.total = 0; f.amt8 = 0; f.stampOff = false; f.date = today();
+    writeQueue(null);
     closeDlg($('#dlgSent'));
     syncForm(); renderPreview();
     $('#to').focus();
@@ -840,8 +999,23 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
     if (code === null) return;
     var msg = q.get('passprnt_message') || '';
     try { history.replaceState(null, '', location.pathname); } catch (e) {}
-    if (code === '0') { toast('印刷しました'); return; }
-    var last = state.receipts[0];
+    var q = readQueue(), cur = q ? findReceipt(q.ids[q.pos]) : null;
+    if (code === '0') {
+      if (cur && queueNext()) {
+        lastUri = passprntUri(cur);
+        $('#ttlSent').textContent = 'No. ' + cur.no + progressText(cur) + ' を印刷しました';
+        $('#sentWait').hidden = true; $('#sentBlocked').hidden = true;
+        $('#sentTop').hidden = true; $('#btnCopy').hidden = true; $('#openLink').hidden = true; $('#copyHint').hidden = true;
+        $('#btnAgain').hidden = true;
+        showQueueNext();
+        openDlg($('#dlgSent'));
+        return;
+      }
+      if (q) { writeQueue(null); toast(q.ids.length + '枚すべて印刷しました'); return; }
+      toast('印刷しました');
+      return;
+    }
+    var last = cur || state.receipts[0];
     $('#resultMsg').textContent = (PRINT_ERRORS[code] || 'PassPRNT からエラーが返りました。') +
       '（コード ' + code + (msg ? ' ' + msg : '') + '）';
     $('#btnRetry').hidden = !last;
@@ -869,6 +1043,7 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
         state.form[seg.dataset.key] = b.dataset.v;
         syncSeg(seg);
         $('#mixRow').hidden = state.form.taxMode !== 'mix';
+        $('#monthRow').hidden = state.form.monthly !== 'on';
         renderPreview();
       });
     });
@@ -882,9 +1057,17 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
     $('#btnNext').addEventListener('click', nextReceipt);
     $('#btnCopy').addEventListener('click', copyLink);
     $('#btnAgain').addEventListener('click', function () { if (lastUri) openUri(lastUri); });
+    $('#btnQueueNext').addEventListener('click', sendQueued);
+    $('#mStart').addEventListener('input', function (e) {
+      if (/^\d{4}-\d{2}$/.test(e.target.value)) { state.form.mStart = e.target.value; renderPreview(); }
+    });
+    $('#mMinus').addEventListener('click', function () { state.form.mCount = Math.max(1, state.form.mCount - 1); renderPreview(); });
+    $('#mPlus').addEventListener('click', function () { state.form.mCount = Math.min(12, state.form.mCount + 1); renderPreview(); });
     $('#btnRetry').addEventListener('click', function () {
       closeDlg($('#dlgResult'));
-      if (state.receipts[0]) send(clone(state.receipts[0]));
+      var q = readQueue(), cur = q ? findReceipt(q.ids[q.pos]) : null;
+      if (cur) send(cur);
+      else if (state.receipts[0]) send(clone(state.receipts[0]));
     });
     $('#btnSettings').addEventListener('click', openSettings);
     $('#btnHistory').addEventListener('click', function () { renderHistory(); openDlg($('#dlgHistory')); });
@@ -903,10 +1086,8 @@ dialog::backdrop{background:rgba(6,20,26,.55)}
 
   /* ---------- 起動 ---------- */
   var local = readLocal();
-  if (local) {
-    state.settings = normSettings(local.settings);
-    state.receipts = Array.isArray(local.receipts) ? local.receipts : [];
-  }
+  state.settings = normSettings(local && local.settings);
+  if (local) state.receipts = Array.isArray(local.receipts) ? local.receipts : [];
   bind();
   renderAll();
   readPrintResult();
