@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>蜜塩芋 さつまいも伝来POP（A4）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@500;700;900&family=Zen+Kaku+Gothic+New:wght@500;700&display=block" rel="stylesheet">
+<style>
+:root {
+  --paper: #f6f1e6;
+  --ink: #1a1612;
+  --sub: #5a5249;
+  --gold: #a87c22;
+  --gold-soft: #e9dcc0;
+  --line: #cbbf9f;
+  --miyako: #1f7fa3;
+  --miyako-soft: #dcecf2;
+  --mincho: "Zen Old Mincho", serif;
+  --gothic: "Zen Kaku Gothic New", sans-serif;
+}
+@page { size: 210mm 297mm; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #d9d4ca; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { display: flex; justify-content: center; padding: 2vh 0; }
+.stage { position: relative; overflow: hidden; }
+.pop {
+  position: absolute; top: 0; left: 0;
+  width: 210mm; height: 297mm;
+  transform-origin: 0 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--mincho);
+  font-weight: 500;
+  overflow: hidden;
+}
+@media print {
+  html, body { background: var(--paper); padding: 0; }
+  .stage { width: 210mm !important; height: 297mm !important; }
+  .pop { transform: none !important; }
+}
+.frame { position: absolute; pointer-events: none; }
+.frame-outer { inset: 6mm; border: 1.1mm solid var(--ink); }
+.frame-inner { inset: 8.6mm; border: 0.35mm solid var(--ink); }
+
+/* 見出し */
+.head { position: absolute; top: 16mm; left: 18mm; right: 40mm; }
+.head-q {
+  display: inline-block;
+  font-family: var(--gothic); font-weight: 700; font-size: 4.2mm; letter-spacing: 0.16em;
+  color: var(--paper); background: var(--ink); padding: 1.2mm 3mm;
+}
+.head-myth { font-weight: 900; font-size: 6.4mm; line-height: 1.3; margin-top: 3.5mm; }
+.head-myth s { text-decoration-thickness: 0.7mm; text-decoration-color: #b4432f; }
+.head-answer { font-weight: 900; line-height: 1.2; margin-top: 2.5mm; }
+.head-answer span { display: block; font-size: 8.6mm; }
+.head-answer em { font-style: normal; color: var(--miyako); font-size: 17mm; }
+
+.logo { position: absolute; top: 15mm; right: 16mm; display: flex; flex-direction: column; align-items: center; }
+.logo-place { height: 9mm; }
+.logo-name { height: 44mm; margin-top: 1.6mm; }
+
+/* 伝来の順番 */
+.flow { position: absolute; top: 80mm; left: 18mm; width: 174mm; }
+.sec-title {
+  font-family: var(--gothic); font-weight: 700; font-size: 4mm; letter-spacing: 0.12em;
+  color: var(--gold); border-bottom: 0.4mm solid var(--gold); padding-bottom: 1.2mm; margin-bottom: 3mm;
+}
+.flow svg { width: 174mm; height: 72mm; display: block; }
+.flow-note { font-family: var(--gothic); font-size: 3mm; color: var(--sub); margin-top: 1.2mm; }
+
+/* 下の2枚 */
+.cards { position: absolute; top: 172mm; left: 18mm; right: 18mm; display: grid; grid-template-columns: 1.08fr 1fr; gap: 6mm; }
+.card { border-top: 0.6mm solid var(--ink); padding-top: 2.6mm; }
+.card h2 { font-weight: 900; font-size: 6.2mm; line-height: 1.3; }
+.card h2 small { display: block; font-family: var(--gothic); font-weight: 700; font-size: 3.4mm; color: var(--gold); letter-spacing: 0.12em; margin-bottom: 1mm; }
+.card ol, .card ul { list-style: none; margin-top: 1.6mm; }
+.card li { display: grid; grid-template-columns: 15mm 1fr; column-gap: 2.6mm; font-family: var(--gothic); font-size: 3.3mm; line-height: 1.5; padding: 1.2mm 0; border-top: 0.25mm solid var(--line); }
+.card li:first-child { border-top: none; }
+.card li b { font-family: var(--mincho); font-weight: 900; font-size: 4.4mm; white-space: nowrap; color: var(--gold); line-height: 1.2; text-align: right; }
+.card li.key b { color: var(--miyako); }
+.card .lead { font-family: var(--gothic); font-size: 3.3mm; line-height: 1.6; margin-top: 2mm; color: #2f2a24; }
+
+/* 締め */
+.foot {
+  position: absolute; left: 8.6mm; right: 8.6mm; bottom: 8.6mm; height: 22mm;
+  background: var(--ink); color: var(--paper);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.foot-main { font-weight: 900; font-size: 7.6mm; letter-spacing: 0.06em; }
+.foot-sub { font-family: var(--gothic); font-size: 3.4mm; letter-spacing: 0.08em; margin-top: 1.6mm; color: var(--gold-soft); }
+</style>
+</head>
+<body>
+<div class="stage">
+<main class="pop">
+  <div class="frame frame-outer" aria-hidden="true"></div>
+  <div class="frame frame-inner" aria-hidden="true"></div>
+
+  <header class="head">
+    <p class="head-q">ご存じですか？</p>
+    <p class="head-myth">さつまいもは「<s>薩摩が最初</s>」…ではありません。</p>
+    <h1 class="head-answer"><span>日本最古のさつまいも伝来地は、</span><em>宮古島</em>です。</h1>
+  </header>
+
+  <div class="logo" aria-label="日本橋 蜜塩芋">
+    <img class="logo-place" src="./logo-nihonbashi-ink.svg" alt="">
+    <img class="logo-name" src="./logo-mitsushioimo-ink.svg" alt="">
+  </div>
+
+  <!-- 伝来の順番 -->
+  <section class="flow">
+    <p class="sec-title">芋が日本に伝わった順番</p>
+    <svg viewBox="0 0 174 72" xmlns="http://www.w3.org/2000/svg" role="img"
+         aria-label="ルソンから中国の福建へ。福建から1597年に宮古島へ、日本で最初の伝来。1605年に沖縄本島へ、18世紀に薩摩へ伝わり、全国でさつまいもと呼ばれるように。">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#5a5249"/>
+        </marker>
+        <marker id="ab" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#1f7fa3"/>
+        </marker>
+      </defs>
+      <g font-family="Zen Kaku Gothic New, sans-serif" text-anchor="middle">
+        <!-- ルソン -->
+        <rect x="0" y="27" width="32" height="18" rx="1.5" fill="#fff" stroke="#cbbf9f" stroke-width="0.4"/>
+        <text x="16" y="35" font-size="4.2" font-weight="700" fill="#1a1612">ルソン</text>
+        <text x="16" y="40.5" font-size="3" fill="#5a5249">（フィリピン）</text>
+        <path d="M32.5,36 H39" stroke="#5a5249" stroke-width="0.6" marker-end="url(#ar)"/>
+        <!-- 中国・福建 -->
+        <rect x="40" y="27" width="34" height="18" rx="1.5" fill="#fff" stroke="#cbbf9f" stroke-width="0.4"/>
+        <text x="57" y="35" font-size="4.2" font-weight="700" fill="#1a1612">中国・福建</text>
+        <text x="57" y="40.5" font-size="3" fill="#5a5249">芋の栽培が盛ん</text>
+        <!-- 分岐 -->
+        <path d="M74.5,31 C79,24 80,18 84,17" fill="none" stroke="#1f7fa3" stroke-width="0.9" marker-end="url(#ab)"/>
+        <path d="M74.5,41 C79,48 80,56 84,57" fill="none" stroke="#5a5249" stroke-width="0.6" marker-end="url(#ar)"/>
+        <!-- 宮古島 -->
+        <rect x="85" y="1" width="89" height="30" rx="2" fill="#dcecf2" stroke="#1f7fa3" stroke-width="0.9"/>
+        <rect x="88" y="4.5" width="22" height="7" rx="1" fill="#1f7fa3"/>
+        <text x="99" y="9.6" font-size="3.6" font-weight="700" fill="#fff">日本で最初</text>
+        <text x="114" y="11" font-size="4" font-weight="700" fill="#1f7fa3" text-anchor="start">1597年</text>
+        <text x="88" y="22" font-size="8" font-weight="700" fill="#1f7fa3" text-anchor="start" font-family="Zen Old Mincho, serif">宮古島</text>
+        <text x="118" y="19.5" font-size="3.4" fill="#1a1612" text-anchor="start">長真氏旨屋が</text>
+        <text x="118" y="24.5" font-size="3.4" fill="#1a1612" text-anchor="start">芋かずらを持ち帰る</text>
+        <!-- 沖縄本島 → 薩摩 → 全国 -->
+        <rect x="85" y="48" width="27" height="19" rx="1.5" fill="#fff" stroke="#cbbf9f" stroke-width="0.4"/>
+        <text x="98.5" y="54" font-size="3.3" font-weight="700" fill="#a87c22">1605年</text>
+        <text x="98.5" y="59.5" font-size="3.9" font-weight="700" fill="#1a1612">沖縄本島</text>
+        <text x="98.5" y="64.2" font-size="2.8" fill="#5a5249">野国総管</text>
+        <path d="M112.5,57.5 H116.5" stroke="#5a5249" stroke-width="0.6" marker-end="url(#ar)"/>
+        <rect x="117" y="48" width="27" height="19" rx="1.5" fill="#fff" stroke="#cbbf9f" stroke-width="0.4"/>
+        <text x="130.5" y="54" font-size="3.3" font-weight="700" fill="#a87c22">18世紀</text>
+        <text x="130.5" y="59.5" font-size="3.9" font-weight="700" fill="#1a1612">薩摩</text>
+        <text x="130.5" y="64.2" font-size="2.8" fill="#5a5249">（いまの鹿児島）</text>
+        <path d="M144.5,57.5 H148.5" stroke="#5a5249" stroke-width="0.6" marker-end="url(#ar)"/>
+        <rect x="149" y="48" width="25" height="19" rx="1.5" fill="#1a1612"/>
+        <text x="161.5" y="55.5" font-size="3.9" font-weight="700" fill="#f6f1e6">全国へ</text>
+        <text x="161.5" y="62" font-size="2.9" fill="#e9dcc0">「さつまいも」に</text>
+        <text x="129.5" y="42" font-size="3" fill="#5a5249">宮古島より8年あと</text>
+      </g>
+    </svg>
+    <p class="flow-note">※宮古島と沖縄本島は、それぞれ中国から伝わったとされます。宮古島から本島へ伝わったという説もありますが、くわしくは分かっていません。</p>
+  </section>
+
+  <section class="cards">
+    <div class="card">
+      <h2><small>芋を伝えた人</small>三度、海に流された人</h2>
+      <p class="lead">長真氏旨屋（ちょうしんうじ しおく）</p>
+      <ol>
+        <li><b>1594</b><span>首里からの帰り道に漂流し、中国の福建へ。3年のあいだ芋の栽培を学ぶ。</span></li>
+        <li class="key"><b>1597</b><span>芋かずら（芋の茎）を持って帰る途中、ふたたび漂流して九州へ。それでも島に帰り着き、芋を広める。</span></li>
+        <li><b>1632</b><span>役人として最高位の「砂川親雲上（うるかぺーちん）」に。</span></li>
+        <li><b>1642</b><span>三度目の漂流で八重山へ。病に倒れ、宮古島に戻ることなく生涯を終える。</span></li>
+      </ol>
+    </div>
+    <div class="card">
+      <h2><small>島を救った芋</small>「唐イモ」が、島の主食に</h2>
+      <p class="lead">台風や干ばつで食べ物が足りなくなる年が多かった宮古島。過酷な土地でも丈夫に育つ芋は、またたく間に島の主食となり、人々を飢えから救いました。</p>
+      <ul>
+        <li><b>今も</b><span>旨屋は、宮古島・平良西仲宗根の「芋ヌ主御嶽（んぬしゅう うたき）」に祀られています。</span></li>
+        <li><b>〜1950</b><span>毎年8月ごろ、島中の芋を持ち寄る豊年感謝祭「芋プゥイ」が開かれていました。</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p class="foot-main">島を救った芋に、その島の塩を。</p>
+    <p class="foot-sub">日本橋 蜜塩芋　｜　芋は本土の畑から、塩は宮古島から。</p>
+  </footer>
+</main>
+</div>
+<script>
+  (function () {
+    var stage = document.querySelector('.stage'), pop = document.querySelector('.pop');
+    function fit() {
+      var s = Math.min(window.innerWidth / pop.offsetWidth, window.innerHeight / pop.offsetHeight) * 0.96;
+      if (window.matchMedia('print').matches || location.search.indexOf('raw') !== -1) s = 1;
+      pop.style.transform = 'scale(' + s + ')';
+      stage.style.width = (pop.offsetWidth * s) + 'px';
+      stage.style.height = (pop.offsetHeight * s) + 'px';
+    }
+    window.addEventListener('resize', fit);
+    window.addEventListener('beforeprint', fit);
+    document.fonts.ready.then(fit);
+    fit();
+  })();
+</script>
+</body>
+</html>
