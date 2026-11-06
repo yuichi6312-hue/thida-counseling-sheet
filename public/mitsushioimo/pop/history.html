@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>蜜塩芋 宮古島の歴史POP（A4）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@500;700;900&family=Zen+Kaku+Gothic+New:wght@500;700&display=block" rel="stylesheet">
+<style>
+:root {
+  --paper: #f6f1e6;
+  --ink: #1a1612;
+  --sub: #5a5249;
+  --gold: #a87c22;
+  --gold-soft: #e9dcc0;
+  --miyako: #1f7fa3;
+  --mincho: "Zen Old Mincho", serif;
+  --gothic: "Zen Kaku Gothic New", sans-serif;
+}
+@page { size: 210mm 297mm; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #d9d4ca; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { display: flex; justify-content: center; padding: 2vh 0; }
+.stage { position: relative; overflow: hidden; }
+.pop {
+  position: absolute; top: 0; left: 0;
+  width: 210mm; height: 297mm;
+  transform-origin: 0 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--mincho);
+  font-weight: 500;
+  overflow: hidden;
+}
+@media print {
+  html, body { background: var(--paper); padding: 0; }
+  .stage { width: 210mm !important; height: 297mm !important; }
+  .pop { transform: none !important; }
+}
+
+/* 額縁 */
+.frame { position: absolute; pointer-events: none; }
+.frame-outer { inset: 6mm; border: 1.1mm solid var(--ink); }
+.frame-inner { inset: 8.6mm; border: 0.35mm solid var(--ink); }
+
+/* 見出し */
+.head { position: absolute; top: 17mm; left: 18mm; right: 52mm; }
+.head-label {
+  display: inline-block;
+  font-family: var(--gothic);
+  font-weight: 700;
+  font-size: 4.2mm;
+  letter-spacing: 0.18em;
+  color: var(--paper);
+  background: var(--ink);
+  padding: 1.2mm 3mm;
+}
+.head-title { font-weight: 900; font-size: 11.5mm; line-height: 1.22; margin-top: 4mm; letter-spacing: 0.02em; }
+.head-title em { font-style: normal; color: var(--miyako); }
+.head-lead { font-size: 4mm; line-height: 1.7; color: var(--sub); margin-top: 3mm; }
+
+.logo { position: absolute; top: 15mm; right: 17mm; display: flex; flex-direction: column; align-items: center; }
+.logo-place { height: 11mm; }
+.logo-name { height: 54mm; margin-top: 2mm; }
+
+/* 地図 */
+.map { position: absolute; top: 86mm; left: 18mm; width: 106mm; height: 72.7mm; }
+.map svg { width: 100%; height: 100%; display: block; }
+.map-note { position: absolute; top: 159.5mm; left: 18mm; font-family: var(--gothic); font-size: 3mm; color: var(--sub); }
+
+/* 年表（地図の右） */
+.legend {
+  position: absolute; top: 96mm; left: 130mm; width: 62mm;
+  font-family: var(--gothic); font-size: 3.4mm; line-height: 1.55; color: var(--sub);
+}
+.legend p { display: flex; align-items: flex-start; gap: 2mm; margin-bottom: 2.2mm; }
+.legend i { display: inline-block; width: 9mm; height: 0; margin-top: 2.4mm; border-top: 0.7mm dashed var(--sub); flex: none; }
+.legend i.gold { border-top: 0.9mm solid var(--gold); }
+.legend i.blue { width: 4mm; height: 4mm; margin: 0.6mm 2.5mm 0; border: none; border-radius: 50%; background: var(--miyako); }
+
+/* タイムライン */
+.timeline { position: absolute; top: 166mm; left: 18mm; right: 18mm; }
+.step { display: grid; grid-template-columns: 30mm 1fr; column-gap: 5mm; padding: 2.4mm 0; border-top: 0.3mm solid #cbbf9f; }
+.step:first-child { border-top: 0.6mm solid var(--ink); }
+.year { font-weight: 900; font-size: 9.5mm; line-height: 1; color: var(--gold); text-align: right; padding-top: 0.6mm; }
+.year small { display: block; font-size: 3.4mm; font-weight: 700; color: var(--sub); margin-top: 1.4mm; letter-spacing: 0.06em; }
+.step h2 { font-weight: 900; font-size: 5.6mm; line-height: 1.3; }
+.step p { font-family: var(--gothic); font-size: 3.5mm; line-height: 1.6; margin-top: 1mm; color: #2f2a24; }
+.step.now .year { color: var(--miyako); }
+
+/* 締め */
+.foot {
+  position: absolute; left: 8.6mm; right: 8.6mm; bottom: 8.6mm; height: 20mm;
+  background: var(--ink); color: var(--paper);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.foot-main { font-weight: 900; font-size: 7.6mm; letter-spacing: 0.06em; }
+.foot-sub { font-family: var(--gothic); font-size: 3.4mm; letter-spacing: 0.08em; margin-top: 1.6mm; color: var(--gold-soft); }
+</style>
+</head>
+<body>
+<div class="stage">
+<main class="pop">
+  <div class="frame frame-outer" aria-hidden="true"></div>
+  <div class="frame frame-inner" aria-hidden="true"></div>
+
+  <header class="head">
+    <p class="head-label">蜜塩芋の塩のふるさと</p>
+    <h1 class="head-title">日本最古の<br>さつまいも伝来地、<br><em>宮古島</em></h1>
+    <p class="head-lead">いまから400年あまり前、嵐の海を越えて島に芋を届けた人がいました。</p>
+  </header>
+
+  <div class="logo" aria-label="日本橋 蜜塩芋">
+    <img class="logo-place" src="./logo-nihonbashi-ink.svg" alt="">
+    <img class="logo-name" src="./logo-mitsushioimo-ink.svg" alt="">
+  </div>
+
+  <!-- 漂流と帰島の道のり（位置関係のイメージ図） -->
+  <figure class="map" aria-label="1594年に首里から中国福建へ漂流し、1597年に九州を経て宮古島へ帰った道のりの図">
+    <svg viewBox="0 0 140 96" xmlns="http://www.w3.org/2000/svg" font-family="Zen Kaku Gothic New, sans-serif">
+      <defs>
+        <marker id="ag" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#a87c22"/>
+        </marker>
+        <marker id="as" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#5a5249"/>
+        </marker>
+      </defs>
+      <rect x="0" y="0" width="140" height="96" rx="2" fill="#e9eef0"/>
+      <!-- 大陸と九州のおおまかな形 -->
+      <path d="M0,0 H28 C24,14 22,26 19,40 C16,55 12,66 8,74 C5,82 2,90 0,96 Z" fill="#ddd5c4"/>
+      <path d="M112,2 C121,0 131,4 134,12 C137,22 130,30 124,34 C118,37 112,32 111,24 C110,15 108,6 112,2 Z" fill="#ddd5c4"/>
+      <text x="6" y="22" font-size="4" fill="#5a5249">中国</text>
+      <text x="113" y="20" font-size="4" fill="#5a5249">九州</text>
+      <text x="52" y="40" font-size="3.6" fill="#8a9aa2" letter-spacing="1">東シナ海</text>
+
+      <!-- 1594 首里 → 福建（漂流） -->
+      <path d="M96,79 C80,58 44,58 21,70" fill="none" stroke="#5a5249" stroke-width="0.8" stroke-dasharray="2.2 1.6" marker-end="url(#as)"/>
+      <text x="48" y="55" font-size="4.2" font-weight="700" fill="#5a5249">1594　漂流</text>
+
+      <!-- 1597 福建 → 九州（漂流）→ 宮古島 -->
+      <path d="M21,73 C40,30 85,10 114,22" fill="none" stroke="#a87c22" stroke-width="1.1" marker-end="url(#ag)"/>
+      <path d="M118,30 C114,58 96,80 77,88" fill="none" stroke="#a87c22" stroke-width="1.1" marker-end="url(#ag)"/>
+      <text x="40" y="13" font-size="4.2" font-weight="700" fill="#a87c22">1597　芋かずらを持って</text>
+
+      <!-- 地点 -->
+      <circle cx="19" cy="72" r="1.8" fill="#1a1612"/>
+      <text x="3" y="81" font-size="4.2" font-weight="700" fill="#1a1612">福建</text>
+      <circle cx="97" cy="80" r="1.6" fill="#1a1612"/>
+      <text x="100" y="82" font-size="3.8" fill="#1a1612">首里（沖縄本島）</text>
+      <ellipse cx="73" cy="90" rx="4.2" ry="2.4" fill="#1f7fa3"/>
+      <text x="56" y="88" font-size="4.6" font-weight="700" fill="#1f7fa3">宮古島</text>
+    </svg>
+  </figure>
+  <p class="map-note">※位置関係をわかりやすく示したイメージ図です</p>
+
+  <div class="legend">
+    <p><i></i><span>1594年　首里からの帰り、嵐で中国の福建へ</span></p>
+    <p><i class="gold"></i><span>1597年　芋かずらを持ち、九州を経て島へ帰る</span></p>
+    <p><i class="blue"></i><span>さつまいもが日本で最初に伝わった島</span></p>
+  </div>
+
+  <section class="timeline">
+    <div class="step">
+      <div class="year">1594<small>文禄3年</small></div>
+      <div>
+        <h2>嵐の海で、中国へ</h2>
+        <p>宮古島の役人・長真氏旨屋（砂川親雲上）は、首里からの帰り道に漂流し、中国の福建にたどり着きます。そこで、芋の栽培が盛んな様子を目にしました。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="year">1597<small>慶長2年</small></div>
+      <div>
+        <h2>芋かずらを、島へ持ち帰る</h2>
+        <p>帰り道でもふたたび嵐に遭い、九州へ。それでも芋かずら（芋のつる）を手放さず、同じ年に宮古島へ帰り着きました。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="year">その後<small>&nbsp;</small></div>
+      <div>
+        <h2>飢えから、島の人々を救う</h2>
+        <p>芋は「唐芋」と呼ばれ、またたく間に島の主食に。台風や干ばつの多い島の暮らしを支えました。旨屋はいまも、島の人々に大恩人として大切に祀られています。</p>
+      </div>
+    </div>
+    <div class="step now">
+      <div class="year">いま<small>&nbsp;</small></div>
+      <div>
+        <h2>日本橋で、その島の塩をひとふり</h2>
+        <p>揉み焼きで仕上げた冷やし焼き芋に、宮古島の塩を合わせたのが「蜜塩芋」です。芋は本土の畑から、塩は宮古島から。</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p class="foot-main">島を救った芋に、その島の塩を。</p>
+    <p class="foot-sub">日本橋 蜜塩芋</p>
+  </footer>
+</main>
+</div>
+<script>
+  (function () {
+    var stage = document.querySelector('.stage'), pop = document.querySelector('.pop');
+    function fit() {
+      var s = Math.min(window.innerWidth / pop.offsetWidth, window.innerHeight / pop.offsetHeight) * 0.96;
+      if (window.matchMedia('print').matches || location.search.indexOf('raw') !== -1) s = 1;
+      pop.style.transform = 'scale(' + s + ')';
+      stage.style.width = (pop.offsetWidth * s) + 'px';
+      stage.style.height = (pop.offsetHeight * s) + 'px';
+    }
+    window.addEventListener('resize', fit);
+    window.addEventListener('beforeprint', fit);
+    document.fonts.ready.then(fit);
+    fit();
+  })();
+</script>
+</body>
+</html>
